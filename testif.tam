@@ -1,0 +1,25 @@
+PUSH 1
+LOADL 7
+STORE (1) 0[SB]
+;fr.n7.stl.block.ast.expression.accessible.VariableUse@74a14482
+LOAD (1) 0[SB]
+LOADL 7
+SUBR IEq
+JUMPIF (0) elseBranch1
+PUSH 1
+LOADL 2
+STORE (1) 1[SB]
+;fr.n7.stl.block.ast.expression.accessible.VariableUse@1540e19d
+LOAD (1) 0[SB]
+LOADL 1
+SUBR IAdd
+LOADA 1[SB]
+STOREI (1)
+JUMP endCondition1
+elseBranch1:
+PUSH 1
+LOADL 1
+STORE (1) 1[SB]
+endCondition1:
+HALT
+

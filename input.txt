@@ -1,0 +1,6 @@
+testfunction {
+
+	int *p = new int();
+   *p = 2;
+
+}

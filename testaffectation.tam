@@ -1,0 +1,11 @@
+PUSH 1
+LOADL 7
+STORE (1) 0[SB]
+;fr.n7.stl.block.ast.expression.accessible.VariableUse@74a14482
+LOAD (1) 0[SB]
+LOADL 2
+SUBR IAdd
+LOADA 0[SB]
+STOREI (1)
+HALT
+

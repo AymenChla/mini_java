@@ -1,0 +1,44 @@
+test {
+	print 0;
+	char x = 'x' ;
+	if (x == 'y') {
+		x = 'z';
+	} else {
+		x = (char) 'y' ;
+		while (x == 'x') {
+		}
+	}
+	
+	
+	<int,int> z = <15,16>;
+	int a = fst z;
+	int b = snd z;
+		
+	typedef int entier;
+	entier k = 77;
+	
+	int j = 1 + a;
+	
+	typedef struct Pointi {
+		int x;
+		int y;
+	}Point;
+	
+	struct Personne {
+		int poids;
+		int taille;
+	}p1 = {65,180};
+	int monPoids =p1.poids; 
+	
+	const int r = 5;
+	int t[] = new int[5];
+	int tab[] = {1,5,2};
+	tab[1] = 5;
+	print (tab[1]);
+	
+	int v = 2;
+	int *ptr = &v;
+	*ptr = 3;
+	
+	
+}

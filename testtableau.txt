@@ -1,0 +1,7 @@
+testtableau {
+
+	int tab[] = new int[5];
+	tab[1] = 9;
+	print (tab[1]);
+
+}

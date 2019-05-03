@@ -1,0 +1,21 @@
+PUSH 3
+LOADL 65
+LOADL 180
+LOADL 1
+STORE (3) 0[SB]
+PUSH 1
+;fr.n7.stl.block.ast.expression.accessible.VariableUse@74a14482
+LOAD (3) 0[SB]
+POP (0) 1
+POP (1) 1
+STORE (1) 3[SB]
+LOADL 0
+LOADL 2
+STOREI (1)
+LOADL 20
+LOADL 30
+LOADL 0
+LOADA 0[SB]
+STOREI (3)
+HALT
+
