@@ -66,15 +66,17 @@ terminal				UL_Double_Egal, UL_Exclamation_Egal;
 terminal				UL_Si, UL_Sinon, UL_Tant_Que, UL_Nouveau, UL_Afficher, UL_Retour;
 terminal				UL_Definition_Constante, UL_Definition_Type, UL_Enregistrement, UL_Enumeration;
 terminal				UL_Type_Booleen, UL_Type_Caractere, UL_Type_Chaine, UL_Type_Entier, UL_Type_Flottant, UL_Type_Vide;
+terminal 				UL_Interface, UL_Extends, UL_Final, UL_Abstract, UL_Public, UL_Private, UL_Static, UL_Class, UL_Implements, UL_Protected;
 terminal String		UL_Identificateur, UL_Chaine, UL_Caractere;
 terminal String		UL_Nombre_Entier, UL_Nombre_Flottant, UL_Nul, UL_Vrai, UL_Faux; // Valeur transmise par l'analyseur lexical
 
+
 /* Non terminaux avec type renvoyé par actions sémantiques (RESULT = ...) */
-non terminal Block						Program;
+//non terminal Block						Program;
 non terminal Block						Bloc; 
 non terminal List<Instruction>			Instructions; 
-non terminal Instruction					Instruction;
-non terminal Instruction					Declaration;
+non terminal Instruction				Instruction;
+non terminal Instruction				Declaration;
 non terminal List<Expression>			Expressions;
 non terminal List<FieldDeclaration>		Champs;
 non terminal FieldDeclaration			Champ;
@@ -86,6 +88,30 @@ non terminal Type						Type, Atomique;
 non terminal Expression 					Expression;
 non terminal AssignableExpression		Affectable;
 
+non terminal List<Container>			Program;
+non terminal List<Container>			Containers;
+non terminal Container					Container;
+non terminal ClasseDeclaration 			Classe;
+non terminal InterfaceDeclaration 		Interface;
+non terminal Extension 					Extension;
+non terminal List<Instanciation> 		Implementations;
+non terminal Integer 					FinalOrAbstract;
+non terminal DeclarationPoo	 			DeclarationPoo;			        
+non terminal List<GenericTypeDeclaration> 		GenDeclarations;
+non terminal GenericTypeDeclaration 	GenDeclaration;
+non terminal List<Instanciation> 		ExtendsGenDeclaration;
+non terminal List<Instanciation> 		ExtensionsI;
+non terminal Instanciation		 		Instanciation;
+non terminal List<Instanciation> 		Instanciations;
+non terminal List<MethodeSignature>		Entetes;
+non terminal MethodeSignature	 		Entete;
+non terminal List<Definition> 			Definitions;
+non terminal Definition					Definition;
+non terminal Methode					Methode;
+non terminal Attribut					Attribut;
+non terminal Attribut					AttributFinal;
+non terminal Boolean 					PublicOrPrivate;
+non terminal Boolean 					Static;
 
 /* Associativité et Priorité relative des opérateurs (du moins prioritaire au plus prioritaire) */
 /* Opérateur le moins prioritiaire */	
@@ -153,10 +179,10 @@ Container ::= Interface : interface
 				
 				RESULT = interface;
 			:}
-			| Classe classe
+			| Classe : classe
 			{:
 				
-				RESULT = interface;
+				RESULT = classe;
 			:}
 		;
 		
@@ -166,7 +192,7 @@ Interface ::= UL_Interface DeclarationPoo : declaration ExtensionsI : extensions
 			:}
 		; 
 
-Classe ::= FinalOrAbsract : fOrA UL_Class DeclarationPoo : declaration Extension : extension UL_Accolade_Ouvrante Definitions : definitions UL_Accolade_Fermante
+Classe ::= FinalOrAbstract : fOrA UL_Class DeclarationPoo : declaration Extension : extension UL_Accolade_Ouvrante Definitions : definitions UL_Accolade_Fermante
 			{:
 				RESULT = new ClasseDeclaration(fOrA, declaration, extensions, definitions); 
 			:}		
@@ -339,7 +365,27 @@ Definition ::= PublicOrPrivate:publicOrPrivate  Static:isStatic UL_Final Attribu
 			RESULT = new Definition(publicOrPrivate,ident,parameters,bloc);
 		:}
 	;
+
+Static	::= UL_Static
+		{: 
+			RESULT = true; 
+		:}
+		| 
+		{: 
+			RESULT = false; 
+		:}
+	;
 	
+PublicOrPrivate ::= UL_Public
+				{: 
+					RESULT = true; 
+				:}
+				| UL_Private 
+				{: 
+					RESULT = false; 
+				:}
+			;
+
 Methode ::= FinalOrAbstract:fOA Entete:entete Bloc:bloc
 		{:
 			RESULT = new Methode(fOA,entete,bloc);
