@@ -1,6 +1,5 @@
 testfunction {
 
-	int *p = new int();
-   *p = 2;
+	struct P {int x;int y;} p = {3,4};
 
 }

@@ -6,12 +6,9 @@ package fr.n7.stl.block;
 
 import java_cup.runtime.*;
 import fr.n7.stl.block.Lexer;
-import java.io.IOException;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
 import java.util.*;
-import java.io.PrintWriter;
-import java.io.FileWriter;
+
 // Elements du métamodèle pour la construction de l'arbre abstrait
 import fr.n7.stl.block.ast.*;
 import fr.n7.stl.block.ast.expression.*;
@@ -23,10 +20,9 @@ import fr.n7.stl.block.ast.instruction.*;
 import fr.n7.stl.block.ast.instruction.declaration.*;
 import fr.n7.stl.block.ast.scope.*;
 import fr.n7.stl.block.ast.type.*;
-import fr.n7.stl.tam.ast.*;
 import fr.n7.stl.block.ast.type.declaration.*;
 import fr.n7.stl.util.*;
-import fr.n7.stl.tam.ast.impl.*;
+import fr.n7.stl.tam.ast.*;
 
 /* Variables partagées dans les actions de l'analyseur syntaxique. */
 parser code {:
@@ -91,8 +87,8 @@ non terminal Expression 					Expression;
 non terminal AssignableExpression		Affectable;
 
 /* Associativité et Priorité relative des opérateurs (du moins prioritaire au plus prioritaire) */
-/* Opérateur le moins prioritiaire */
-precedence nonassoc UL_Parenthese_Fermante;	// Résolution du conflit décaler/réduire sur conversion de type
+/* Opérateur le moins prioritiaire */	
+precedence nonassoc UL_Identificateur;	// Résolution du conflit décaler/réduire sur conversion de type
 precedence right UL_Egal;
 precedence nonassoc UL_Point_Interrogation, UL_Deux_Points;
 precedence left UL_Double_Barre;
@@ -112,31 +108,179 @@ precedence left UL_Crochet_Ouvrant, UL_Point, UL_Parenthese_Ouvrante;
 /* Program et Bloc sont des non terminaux */
 /* UL_Identificateur est un terminal (Unité lexicale) */
 /* bloc est la variable utilisable dans l'action sémantique qui contient la valeur renvoyé par l'analyse du Bloc */
-Program ::= UL_Identificateur:nom Bloc:bloc
+Program ::= Containers : containers
 			{: 
-				System.out.println( "Programme nommé " + nom );
-				System.out.println( bloc ); 
+				
+				 
 				SymbolTable tds = new SymbolTable();
-				if (bloc.resolve(tds)) {
+				System.out.println("ClassOrInterface : classes");
+				/*if (bloc.resolve(tds)) {
 					System.out.println("TDS OK" + tds);
-					 if(bloc.checkType()){
+					if (bloc.checkType()) {
 						System.out.println("Type OK");
 						bloc.allocateMemory(Register.SB,0);
-						TAMFactory tm = new TAMFactoryImpl();
-						Fragment code = bloc.getCode(tm);
-						FileWriter fichier = new FileWriter(nom + ".tam");
-						code.add(tm.createHalt());
-						(new PrintWriter(fichier)).println(code.toString());
-						fichier.close();
-					}else{
+						String code = bloc.getCode(new fr.n7.stl.tam.ast.impl.TAMFactoryImpl()).toString();
+						try {
+							PrintWriter output = new PrintWriter( new FileWriter( new File(".tam" )));
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					} else {
 						System.out.println("Type KO");
-						} 
+					}
 				} else {
 					System.out.println("KO" + tds);
-				}
+				}*/
 			:}
 		;
+		
+Containers ::= Containers : containers Container : container
+			{:
+				containers.add(container);
+				RESULT = containers;
+			:}
+			
+			|{:
+				List<ContainerDeclaration> newContainer = new LinkedList<ContainerDeclaration>();
+				RESULT = newContainer;
+			:}
+		; 
+		
+Container ::= Interface : interface
+			{:
+				
+				RESULT = interface;
+			:}
+			| Classe classe
+			{:
+				
+				RESULT = interface;
+			:}
+		;
+		
+Interface ::= UL_Interface DeclarationPoo : declaration ExtensionsI : extensionsI UL_Accolade_Ouvrante Entetes : entetes UL_Accolade_Fermante
+			{:
+				RESULT = new InterfaceDeclaration(declaration, extensions, entetes);
+			:}
+		; 
 
+Classe ::= FinalOrAbsract : fOrA UL_Class DeclarationPoo : declaration Extensions : extensions UL_Accolade_Ouvrante Definitions : definitions UL_Accolade_Fermante
+			{:
+				RESULT = new ClasseDeclaration(fOrA, declaration, extensions, definitions); 
+			:}		
+		;
+
+FinalOrAbstract ::= UL_Final 
+		{:
+			RESULT = 2;
+		:}
+		| UL_Abstract 
+		{:
+			RESULT = 1;
+		:}
+		| {:
+			RESULT = 0;
+		:}
+		;
+		
+DeclarationPoo ::= UL_Identificateur:name UL_Inferieur GenDeclarations : genDeclarations UL_Superieur	
+				{:
+					RESULT = new GenralDeclaration (name, genDeclarations);
+				:}
+				| UL_Identificateur:name
+				{:
+					RESULT = new SimpleDeclaration (name);
+				:}
+			;
+
+GenDeclarations ::= GenDeclaration :genDeclaration
+				{:
+					LinkedList<GenericTypeDeclaration> result = new LinkedList<GenericTypeDeclaration>();
+					result.add(genDeclaration);
+					RESULT = result;
+				:}
+				| GenDeclarations:genDeclarations UL_Virgule GenDeclaration :genDeclaration
+				{:
+					genDeclarations.add(genDeclaration);
+					RESULT = genDeclarations;
+				:}
+			;
+
+GenDeclaration ::= UL_Identificateur:nom  
+				{:
+					RESULT = new GenericTypeDeclaration(nom);
+				:}
+				| UL_Identificateur:nom ExtendsGenDeclaration:extendsGenDeclaration
+				{:
+					RESULT = new GenericTypeDeclaration(nom,extendsGenDeclaration);
+				:};
+
+ExtendsGenDeclaration ::= Instanciation:instanciation
+				{:
+					LinkedList<Instanciation> result = new LinkedList<Instanciation>();
+					result.add(instanciation);
+					RESULT = result;
+					
+				:}
+				| ExtendsGenDeclaration : extendsGenDeclaration UL_Esperluette Instanciation : instanciation
+				{:
+					extendsGenDeclaration.add(instanciation);
+					RESULT = extendsGenDeclaration;
+				:}
+			;
+
+ExtensionsI ::= UL_Extends Instanciations : instanciations
+			{:
+				RESULT = instanciations;
+			:}
+			|{:
+				RESULT = new LinkedList<Instanciation>();
+			:}
+		; 
+
+
+Instanciation ::= UL_Identificateur:nom 
+		{:
+			RESULT = new Instanciation(nom);
+		:}
+		| UL_Identificateur:nom UL_Inferieur Instanciations:instanciations UL_Superieur	
+		{:
+			RESULT = new Instanciation(nom,instanciations);
+		:}
+	;
+		
+Instanciations ::= Instanciation:instanciation
+	    {:
+			LinkedList<Instanciation> result = LinkedList<Instanciation>();
+			result.add(instanciation);
+			RESULT = result;
+		:}
+		| Instanciations:instanciations UL_Virgule Instanciation:instanciation
+		{:
+			instanciations.add(instanciation);
+			RESULT = instanciations;
+		:}
+	;
+	
+	
+	
+Entetes ::= Entetes:entetes UL_Point_Virgule Entete:entete
+		{:
+			entetes.add(entete);
+			RESULT = entetes;	
+		:}
+		|{: 
+			RESULT = new LinkedList<MethodeSignature>();
+		:}
+	;
+	
+Entete ::= Type:type UL_Identificateur:nom UL_Parenthese_Ouvrante Parameters: parameters UL_Parenthese_Fermante   
+		{: 
+			RESULT = new MethodeSignature(nom,type,parameters);
+		:}
+	;
+	
 Bloc ::= UL_Accolade_Ouvrante Instructions:instructions UL_Accolade_Fermante 
 			{: 
 				RESULT = new Block( instructions ); 
@@ -203,10 +347,10 @@ Atomique ::= UL_Type_Booleen
 			{: 
 				RESULT = AtomicType.IntegerType; 
 			:}
-		|	UL_Type_Flottant
+/* Bloc :		|	UL_Type_Flottant
 			{: 
 				RESULT = AtomicType.FloatingType; 
-			:}
+			:} */
 		|	UL_Type_Vide
 			{: 
 				RESULT = AtomicType.VoidType; 
@@ -221,7 +365,7 @@ Type ::= Atomique:atomique
 			{: 
 				RESULT = new NamedType( nom ); 
 			:}
-		| UL_Enregistrement UL_Identificateur:nom UL_Accolade_Ouvrante Champs:champs UL_Accolade_Fermante
+/*	Bloc	| UL_Enregistrement UL_Identificateur:nom UL_Accolade_Ouvrante Champs:champs UL_Accolade_Fermante
 			{: 
 				RESULT = new RecordType( nom, champs ); 
 			:}
@@ -237,10 +381,10 @@ Type ::= Atomique:atomique
 			{: 
 				RESULT = new NamedType( nom ); 
 			:}
-				| UL_Inferieur Type:gauche UL_Virgule Type:droit UL_Superieur
+		| UL_Inferieur Type:gauche UL_Virgule Type:droit UL_Superieur
 			{:
 				RESULT = new CoupleType( gauche, droit );
-			:}
+			:} */
 		;
 
 Instructions ::= Instructions:instructions Instruction:instruction
@@ -256,7 +400,7 @@ Identifiant ::= UL_Identificateur:nom
 				{: 
 					RESULT = new Pair<String,PartialType>( nom, null ); 
 				:}
-			| UL_Asterisque Identifiant:identifiant 
+/* Bloc			| UL_Asterisque Identifiant:identifiant 
 				{:
 					if (identifiant.getRight() == null) {
 						identifiant.setRight( new PartialPointerType() );
@@ -264,7 +408,7 @@ Identifiant ::= UL_Identificateur:nom
 						identifiant.getRight().enrich(new PartialPointerType());
 					}
 					RESULT = identifiant;
-				:}
+				:} */
 			| Identifiant:identifiant UL_Crochet_Ouvrant UL_Crochet_Fermant 
 				{:
 					if (identifiant.getRight() == null) {
@@ -338,7 +482,7 @@ Declaration ::= Type:type Identifiant:identifiant UL_Egal Expression:valeur UL_P
 					RESULT = new FunctionDeclaration( identifiant.getLeft(), _type, _parametres, corps);
  
 				:}
-			| UL_Definition_Type Type:type Identifiant:identifiant UL_Point_Virgule
+/* Bloc			| UL_Definition_Type Type:type Identifiant:identifiant UL_Point_Virgule
 				{:
 					Type _type = identifiant.getRight();
 					if (_type == null) {
@@ -357,7 +501,7 @@ Declaration ::= Type:type Identifiant:identifiant UL_Egal Expression:valeur UL_P
 						_type = ((PartialType)_type).complete( type );
  					}
 					RESULT = new ConstantDeclaration( identifiant.getLeft(), _type, valeur); 
-				:}
+				:} */
 			;
 
 Instruction ::= Declaration:declaration
@@ -392,7 +536,7 @@ Instruction ::= Declaration:declaration
 			
 Expressions ::= Expressions:expressions UL_Virgule Expression:expression 	
 				{:
-					expressions.add( expression);
+					expressions.add( expression );
 					RESULT = expressions; 
 				:}
             | Expression:expression								
@@ -407,10 +551,10 @@ Affectable ::= UL_Identificateur:nom
 				{:
 					RESULT = new VariableAssignment( nom );
 				:}
-			| UL_Asterisque Affectable:pointeur
+/* Bloc			| UL_Asterisque Affectable:pointeur
 				{:
 					RESULT = new PointerAssignment( pointeur );
-				:}
+				:} */
 			| Affectable:tableau UL_Crochet_Ouvrant Expression:indice UL_Crochet_Fermant
 				{:
 					RESULT = new ArrayAssignment( tableau, indice);
@@ -489,7 +633,7 @@ Expression ::= /* Affectable:affectable UL_Egal Expression:expression
              	{: 
 					RESULT = new UnaryExpression( UnaryOperator.Negate, expression); 
 				:} 	
-            | UL_Esperluette Affectable:affectable                 
+ /* Bloc           | UL_Esperluette Affectable:affectable                 
              	{: 
 					RESULT = new AddressAccess( affectable ); 
 				:} 	
@@ -504,7 +648,7 @@ Expression ::= /* Affectable:affectable UL_Egal Expression:expression
 			| UL_Second Expression:expression                 
              	{: 
 					RESULT = new Second( expression ); 
-				:} 	
+				:} 	*/
 			| Expression:expression UL_Crochet_Ouvrant Expression:indice UL_Crochet_Fermant
 				{:
 					RESULT = new ArrayAccess( expression, indice );
@@ -533,21 +677,27 @@ Expression ::= /* Affectable:affectable UL_Egal Expression:expression
              	{: 
 					RESULT = new Sequence( expressions ); 
 				:}
-			| UL_Inferieur Expression:premier UL_Virgule Expression:second UL_Superieur	         
+/* Bloc			| UL_Inferieur Expression:premier UL_Virgule Expression:second UL_Superieur	         
              	{: 
 					RESULT = new Couple( premier, second ); 
-				:}
+				:} */
 			| UL_Identificateur:nom	                     
              	{: 
 					RESULT = new IdentifierAccess( nom ); 
 				:}
-			| // TODO : Should accept an expression as function
-				UL_Identificateur:nom	UL_Parenthese_Ouvrante Expressions:parametres UL_Parenthese_Fermante                     
+			| // Bloc : Appel de fonction simple
+				UL_Identificateur:nom
+				// MiniJava : Appel de méthode
+				// Expression:objet
+				UL_Parenthese_Ouvrante Expressions:parametres UL_Parenthese_Fermante                     
              	{: 
 					RESULT = new FunctionCall( nom, parametres ); 
 				:}
-			| // TODO : Should accept an expression as function
-				UL_Identificateur:nom	UL_Parenthese_Ouvrante UL_Parenthese_Fermante                     
+			| // Bloc : Appel de fonction simple
+				UL_Identificateur:nom	
+				// MiniJava : Appel de méthode
+				// Expression:objet
+				UL_Parenthese_Ouvrante UL_Parenthese_Fermante                     
              	{:
 					List<Expression> _parametres = new LinkedList<Expression>();
 					RESULT = new FunctionCall( nom, _parametres ); 
@@ -568,10 +718,10 @@ Expression ::= /* Affectable:affectable UL_Egal Expression:expression
              	{: 
 					RESULT = NullValue.Null; 
 				:}
-			| UL_Nombre_Flottant:flottant	                     
+/* Bloc			| UL_Nombre_Flottant:flottant	                     
              	{: 
 					RESULT = new FloatingValue( flottant ); 
-				:}
+				:} */
 			| UL_Caractere:caractere	                     
              	{: 
 					RESULT = new CharacterValue( caractere ); 
