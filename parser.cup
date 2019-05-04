@@ -86,6 +86,7 @@ non terminal Type						Type, Atomique;
 non terminal Expression 					Expression;
 non terminal AssignableExpression		Affectable;
 
+
 /* Associativité et Priorité relative des opérateurs (du moins prioritaire au plus prioritaire) */
 /* Opérateur le moins prioritiaire */	
 precedence nonassoc UL_Identificateur;	// Résolution du conflit décaler/réduire sur conversion de type
@@ -165,12 +166,40 @@ Interface ::= UL_Interface DeclarationPoo : declaration ExtensionsI : extensions
 			:}
 		; 
 
-Classe ::= FinalOrAbsract : fOrA UL_Class DeclarationPoo : declaration Extensions : extensions UL_Accolade_Ouvrante Definitions : definitions UL_Accolade_Fermante
+Classe ::= FinalOrAbsract : fOrA UL_Class DeclarationPoo : declaration Extension : extension UL_Accolade_Ouvrante Definitions : definitions UL_Accolade_Fermante
 			{:
 				RESULT = new ClasseDeclaration(fOrA, declaration, extensions, definitions); 
 			:}		
 		;
 
+Extension ::= UL_Extends Instanciation:instanciation Implementations:implementations 
+		{:
+			RESULT = new Extension(instanciation,implementations);			
+		:} 
+		| UL_Extends Instanciation:instanciation 
+		{:
+	
+			RESULT = new Extension(instanciation);		
+		:} 
+		| Implementations:implementations
+		{:
+			RESULT = new Extension(implementations);
+		:}
+		| 
+		{:
+			RESULT = new Extension();
+		:} 
+	;
+
+Implementations ::= UL_Implements Instanciations 
+			{:
+				RESULT = instanciations;
+			:}
+			|{:
+				RESULT = new LinkedList<Instanciation>();
+			:}
+		; 
+			
 FinalOrAbstract ::= UL_Final 
 		{:
 			RESULT = 2;
@@ -280,7 +309,61 @@ Entete ::= Type:type UL_Identificateur:nom UL_Parenthese_Ouvrante Parameters: pa
 			RESULT = new MethodeSignature(nom,type,parameters);
 		:}
 	;
+
+
+Definitions ::= Definitions:definitions Definition:definition
+		{:
+			definitions.add(definition);
+			RESULT = definitions;
+		:}
+		|
+		{:
+			RESULT = new LinkedList<Definition>();
+		:}
+	; 
 	
+Definition ::= PublicOrPrivate:publicOrPrivate  Static:isStatic UL_Final AttributFinal:attributFinal
+		{:
+			RESULT = new Definition(publicOrPrivate,isStatic,true,attributFinal);
+		:}
+		PublicOrPrivate:publicOrPrivate  Static:isStatic Attribut:attribut
+		{:
+			RESULT = new Definition(publicOrPrivate,isStatic,false,attribut);
+		:}
+		| PublicOrPrivate:publicOrPrivate  Static:static Methode:methode
+		{:
+ 			RESULT = new Definition(publicOrPrivate,isStatic,false,methode);
+		:}
+		| PublicOrPrivate:publicOrPrivate  Identifiant:ident UL_Parenthese_Ouvrante Parameters:parameters UL_Parenthese_Fermante Bloc:bloc
+		{:
+			RESULT = new Definition(publicOrPrivate,ident,parameters,bloc);
+		:}
+	;
+	
+Methode ::= FinalOrAbstract:fOA Entete:entete Bloc:bloc
+		{:
+			RESULT = new Methode(fOA,entete,bloc);
+		:}
+	;	 
+
+
+Attribut ::= Type:type Identifiant:ident UL_Point_Virgule
+		 {:
+			RESULT = new Attribut(type,ident);
+		 :}
+		| Type:type Identifiant:ident UL_Egal Expression:expression UL_Point_Virgule
+		{:
+			RESULT  = new Attribut(type,ident,expression);
+		:}
+	  ;
+		
+AttributFinal ::= Type:type Identifiant:ident UL_Egal Expression:expression UL_Point_Virgule
+		{:
+			RESULT  = new Attribut(type,ident,expression);
+		:}
+	   ;
+	   
+	   
 Bloc ::= UL_Accolade_Ouvrante Instructions:instructions UL_Accolade_Fermante 
 			{: 
 				RESULT = new Block( instructions ); 
@@ -357,14 +440,19 @@ Atomique ::= UL_Type_Booleen
 			:}
 		;
 		
-Type ::= Atomique:atomique
+Type ::= Atomique:atomique 
 			{: 
 				RESULT = atomique; 
 			:}
-		| UL_Identificateur:nom
+		| UL_Identificateur:nom 
 			{: 
 				RESULT = new NamedType( nom ); 
 			:}
+		| Instanciation:instanciation 
+			{:
+				RESULT = instanciation;
+			:}
+			
 /*	Bloc	| UL_Enregistrement UL_Identificateur:nom UL_Accolade_Ouvrante Champs:champs UL_Accolade_Fermante
 			{: 
 				RESULT = new RecordType( nom, champs ); 
