@@ -67,7 +67,7 @@ terminal				UL_Si, UL_Sinon, UL_Tant_Que, UL_Nouveau, UL_Afficher, UL_Retour;
 terminal				UL_Definition_Constante, UL_Definition_Type, UL_Enregistrement, UL_Enumeration;
 terminal				UL_Type_Booleen, UL_Type_Caractere, UL_Type_Chaine, UL_Type_Entier, UL_Type_Flottant, UL_Type_Vide;
 terminal 				UL_Interface, UL_Extends, UL_Final, UL_Abstract, UL_Public, UL_Private, UL_Static, UL_Class, UL_Implements, UL_Protected;
-terminal String		UL_Identificateur, UL_Chaine, UL_Caractere;
+terminal String		UL_IdentificateurType, UL_Identificateur, UL_Chaine, UL_Caractere;
 terminal String		UL_Nombre_Entier, UL_Nombre_Flottant, UL_Nul, UL_Vrai, UL_Faux; // Valeur transmise par l'analyseur lexical
 
 
@@ -140,7 +140,7 @@ Program ::= Containers : containers
 				
 				 
 				SymbolTable tds = new SymbolTable();
-				System.out.println("ClassOrInterface : classes");
+				System.out.println("Containers : classes");
 				/*if (bloc.resolve(tds)) {
 					System.out.println("TDS OK" + tds);
 					if (bloc.checkType()) {
@@ -192,25 +192,17 @@ Interface ::= UL_Interface DeclarationPoo : declaration ExtensionsI : extensions
 			:}
 		; 
 
-Classe ::= FinalOrAbstract : fOrA UL_Class DeclarationPoo : declaration Extension : extension UL_Accolade_Ouvrante Definitions : definitions UL_Accolade_Fermante
+Classe ::= FinalOrAbstract : fOrA UL_Class DeclarationPoo : declaration Extension : extension Implementations:implementations  UL_Accolade_Ouvrante Definitions : definitions UL_Accolade_Fermante
 			{:
 				RESULT = new ClasseDeclaration(fOrA, declaration, extensions, definitions); 
 			:}		
 		;
 
-Extension ::= UL_Extends Instanciation:instanciation Implementations:implementations 
-		{:
-			RESULT = new Extension(instanciation,implementations);			
-		:} 
-		| UL_Extends Instanciation:instanciation 
+Extension ::=  UL_Extends Instanciation:instanciation 
 		{:
 	
 			RESULT = new Extension(instanciation);		
 		:} 
-		| Implementations:implementations
-		{:
-			RESULT = new Extension(implementations);
-		:}
 		| 
 		{:
 			RESULT = new Extension();
@@ -239,11 +231,11 @@ FinalOrAbstract ::= UL_Final
 		:}
 		;
 		
-DeclarationPoo ::= UL_Identificateur:name UL_Inferieur GenDeclarations : genDeclarations UL_Superieur	
+DeclarationPoo ::= UL_IdentificateurType:name UL_Inferieur GenDeclarations : genDeclarations UL_Superieur	
 				{:
 					RESULT = new GenralDeclaration (name, genDeclarations);
 				:}
-				| UL_Identificateur:name
+				| UL_IdentificateurType:name
 				{:
 					RESULT = new SimpleDeclaration (name);
 				:}
@@ -262,11 +254,11 @@ GenDeclarations ::= GenDeclaration :genDeclaration
 				:}
 			;
 
-GenDeclaration ::= UL_Identificateur:nom  
+GenDeclaration ::= UL_IdentificateurType:nom  
 				{:
 					RESULT = new GenericTypeDeclaration(nom);
 				:}
-				| UL_Identificateur:nom ExtendsGenDeclaration:extendsGenDeclaration
+				| UL_IdentificateurType:nom ExtendsGenDeclaration:extendsGenDeclaration
 				{:
 					RESULT = new GenericTypeDeclaration(nom,extendsGenDeclaration);
 				:};
@@ -295,11 +287,11 @@ ExtensionsI ::= UL_Extends Instanciations : instanciations
 		; 
 
 
-Instanciation ::= UL_Identificateur:nom 
+Instanciation ::= UL_IdentificateurType:nom 
 		{:
 			RESULT = new Instanciation(nom);
 		:}
-		| UL_Identificateur:nom UL_Inferieur Instanciations:instanciations UL_Superieur	
+		| UL_IdentificateurType:nom UL_Inferieur Instanciations:instanciations UL_Superieur	
 		{:
 			RESULT = new Instanciation(nom,instanciations);
 		:}
@@ -320,7 +312,7 @@ Instanciations ::= Instanciation:instanciation
 	
 	
 	
-Entetes ::= Entetes:entetes UL_Point_Virgule Entete:entete
+Entetes ::= Entetes:entetes Entete:entete
 		{:
 			entetes.add(entete);
 			RESULT = entetes;	
@@ -330,7 +322,7 @@ Entetes ::= Entetes:entetes UL_Point_Virgule Entete:entete
 		:}
 	;
 	
-Entete ::= Type:type UL_Identificateur:nom UL_Parenthese_Ouvrante Parameters: parameters UL_Parenthese_Fermante   
+Entete ::= Type:type UL_Identificateur:nom UL_Parenthese_Ouvrante Parameters: parameters UL_Parenthese_Fermante   UL_Point_Virgule 
 		{: 
 			RESULT = new MethodeSignature(nom,type,parameters);
 		:}
@@ -356,14 +348,14 @@ Definition ::= PublicOrPrivate:publicOrPrivate  Static:isStatic UL_Final Attribu
 		{:
 			RESULT = new Definition(publicOrPrivate,isStatic,false,attribut);
 		:}
-		| PublicOrPrivate:publicOrPrivate  Static:static Methode:methode
+		| PublicOrPrivate:publicOrPrivate  Static:istatic Methode:methode
 		{:
  			RESULT = new Definition(publicOrPrivate,isStatic,false,methode);
 		:}
-		| PublicOrPrivate:publicOrPrivate  Identifiant:ident UL_Parenthese_Ouvrante Parameters:parameters UL_Parenthese_Fermante Bloc:bloc
+/* Conflit		| PublicOrPrivate:publicOrPrivate  UL_IdentificateurType:ident UL_Parenthese_Ouvrante Parameters:parameters UL_Parenthese_Fermante Bloc:bloc
 		{:
 			RESULT = new Definition(publicOrPrivate,ident,parameters,bloc);
-		:}
+		:} */
 	;
 
 Static	::= UL_Static
@@ -489,10 +481,6 @@ Atomique ::= UL_Type_Booleen
 Type ::= Atomique:atomique 
 			{: 
 				RESULT = atomique; 
-			:}
-		| UL_Identificateur:nom 
-			{: 
-				RESULT = new NamedType( nom ); 
 			:}
 		| Instanciation:instanciation 
 			{:

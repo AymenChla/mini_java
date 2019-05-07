@@ -66,6 +66,7 @@ ContenuCommentaire 	= ( [^*] | \*+[^*/] )*
 Chaine				= \" ([^\"] | \\\") * \"
 Caractere			= \' ([^\\] | \\\\) \'
 
+IdentificateurType = [:uppercase:] ([:jletterdigit:] | [:jletter:] | "_" )*
 Identificateur = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
 
 
@@ -147,6 +148,7 @@ Identificateur = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
   {Chaine}			{ return symbolFactory.newSymbol("Chaine de caractères", UL_Chaine, yytext()); }
   {Entier}     		{ return symbolFactory.newSymbol("Nombre Entier", UL_Nombre_Entier, yytext()); }
   {Flottant}     	{ return symbolFactory.newSymbol("Nombre Flottant", UL_Nombre_Flottant, yytext()); }
+  {IdentificateurType}	{ return symbolFactory.newSymbol("IdentificateurType", UL_IdentificateurType, yytext()); }
   {Identificateur}	{ return symbolFactory.newSymbol("Identificateur", UL_Identificateur, yytext()); }
 }
 
