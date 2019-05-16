@@ -23,6 +23,11 @@ import fr.n7.stl.block.ast.type.*;
 import fr.n7.stl.block.ast.type.declaration.*;
 import fr.n7.stl.util.*;
 import fr.n7.stl.tam.ast.*;
+import fr.n7.stl.poo.*;
+import fr.n7.stl.poo.declaration.*;
+import fr.n7.stl.poo.methode.*;
+import fr.n7.stl.poo.definition.*;
+import fr.n7.stl.poo.type.*;
 
 /* Variables partagées dans les actions de l'analyseur syntaxique. */
 parser code {:
@@ -88,15 +93,15 @@ non terminal Type						Type, Atomique;
 non terminal Expression 					Expression;
 non terminal AssignableExpression		Affectable;
 
-non terminal List<Container>			Program;
-non terminal List<Container>			Containers;
-non terminal Container					Container;
+non terminal List<ContainerDeclaration>			Program;
+non terminal List<ContainerDeclaration>			Containers;
+non terminal ContainerDeclaration				Container;
 non terminal ClasseDeclaration 			Classe;
 non terminal InterfaceDeclaration 		Interface;
 non terminal Extension 					Extension;
 non terminal List<Instanciation> 		Implementations;
 non terminal Integer 					FinalOrAbstract;
-non terminal DeclarationPoo	 			DeclarationPoo;			        
+non terminal PooDeclaration	 			PooDeclaration;			        
 non terminal List<GenericTypeDeclaration> 		GenDeclarations;
 non terminal GenericTypeDeclaration 	GenDeclaration;
 non terminal List<Instanciation> 		ExtendsGenDeclaration;
@@ -174,10 +179,10 @@ Containers ::= Containers : containers Container : container
 			:}
 		; 
 		
-Container ::= Interface : interface
+Container ::= Interface : interf
 			{:
 				
-				RESULT = interface;
+				RESULT = interf;
 			:}
 			| Classe : classe
 			{:
@@ -186,13 +191,17 @@ Container ::= Interface : interface
 			:}
 		;
 		
-Interface ::= UL_Interface DeclarationPoo : declaration ExtensionsI : extensionsI UL_Accolade_Ouvrante Entetes : entetes UL_Accolade_Fermante
+Interface ::= UL_Interface PooDeclaration : declaration ExtensionsI : extensionsI UL_Accolade_Ouvrante Entetes : entetes UL_Accolade_Fermante
 			{:
 				RESULT = new InterfaceDeclaration(declaration, extensions, entetes);
 			:}
 		; 
 
-Classe ::= FinalOrAbstract : fOrA UL_Class DeclarationPoo : declaration Extension : extension Implementations:implementations  UL_Accolade_Ouvrante Definitions : definitions UL_Accolade_Fermante
+Classe ::=  UL_Class PooDeclaration : declaration Extension : extension Implementations:implementations  UL_Accolade_Ouvrante Definitions : definitions UL_Accolade_Fermante
+			{:
+				RESULT = new ClasseDeclaration(0, declaration, extensions, definitions);
+			:}
+			| FinalOrAbstract : fOrA UL_Class PooDeclaration : declaration Extension : extension Implementations:implementations  UL_Accolade_Ouvrante Definitions : definitions UL_Accolade_Fermante
 			{:
 				RESULT = new ClasseDeclaration(fOrA, declaration, extensions, definitions); 
 			:}		
@@ -226,18 +235,15 @@ FinalOrAbstract ::= UL_Final
 		{:
 			RESULT = 1;
 		:}
-		| {:
-			RESULT = 0;
-		:}
 		;
 		
-DeclarationPoo ::= UL_IdentificateurType:name UL_Inferieur GenDeclarations : genDeclarations UL_Superieur	
+PooDeclaration ::= UL_IdentificateurType:name UL_Inferieur GenDeclarations : genDeclarations UL_Superieur	
 				{:
-					RESULT = new GenralDeclaration (name, genDeclarations);
+					RESULT = new PooDeclaration (name, genDeclarations);
 				:}
 				| UL_IdentificateurType:name
 				{:
-					RESULT = new SimpleDeclaration (name);
+					RESULT = new PooDeclaration (name);
 				:}
 			;
 
@@ -299,7 +305,7 @@ Instanciation ::= UL_IdentificateurType:nom
 		
 Instanciations ::= Instanciation:instanciation
 	    {:
-			LinkedList<Instanciation> result = LinkedList<Instanciation>();
+			LinkedList<Instanciation> result = new LinkedList<Instanciation>();
 			result.add(instanciation);
 			RESULT = result;
 		:}
@@ -344,11 +350,19 @@ Definition ::= PublicOrPrivate:publicOrPrivate  Static:isStatic UL_Final Attribu
 		{:
 			RESULT = new Definition(publicOrPrivate,isStatic,true,attributFinal);
 		:}
-		PublicOrPrivate:publicOrPrivate  Static:isStatic Attribut:attribut
+		|PublicOrPrivate:publicOrPrivate  Static:isStatic Attribut:attribut
 		{:
 			RESULT = new Definition(publicOrPrivate,isStatic,false,attribut);
 		:}
-		| PublicOrPrivate:publicOrPrivate  Static:istatic Methode:methode
+		| PublicOrPrivate:publicOrPrivate  Static:istatic UL_Final Methode:methode
+		{:
+ 			RESULT = new Definition(publicOrPrivate,isStatic,false,methode);
+		:}
+		| PublicOrPrivate:publicOrPrivate  Static:istatic UL_Abstract Methode:methode
+		{:
+ 			RESULT = new Definition(publicOrPrivate,isStatic,false,methode);
+		:}
+		| PublicOrPrivate:publicOrPrivate  Static:istatic Methode:methode 
 		{:
  			RESULT = new Definition(publicOrPrivate,isStatic,false,methode);
 		:}
@@ -378,9 +392,9 @@ PublicOrPrivate ::= UL_Public
 				:}
 			;
 
-Methode ::= FinalOrAbstract:fOA Entete:entete Bloc:bloc
+Methode ::=  Entete:entete Bloc:bloc
 		{:
-			RESULT = new Methode(fOA,entete,bloc);
+			RESULT = new Methode(entete,bloc);
 		:}
 	;	 
 
