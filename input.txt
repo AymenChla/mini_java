@@ -1,5 +1,16 @@
-testfunction {
-
-	struct P {int x;int y;} p = {3,4};
-
+class XXX extends X<Y,Z> implements Y<A,B>,C {
+	public int x ;	
+	private int y;
+	
+	public final int z = 0;
+	
+	public int getX (int x){
+	 return x;
+	} 
 }
+
+interface YYY extends A<H,L>,J{
+	 int getX(int y);
+	 int getY(int y);
+}
+

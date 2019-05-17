@@ -25,7 +25,7 @@ import fr.n7.stl.util.*;
 import fr.n7.stl.tam.ast.*;
 import fr.n7.stl.poo.*;
 import fr.n7.stl.poo.declaration.*;
-import fr.n7.stl.poo.methode.*;
+import fr.n7.stl.block.poo.methode.*;
 import fr.n7.stl.poo.definition.*;
 import fr.n7.stl.poo.type.*;
 
@@ -146,6 +146,9 @@ Program ::= Containers : containers
 				 
 				SymbolTable tds = new SymbolTable();
 				System.out.println("Containers : classes");
+				/*for(ContainerDeclaration cd : containers){
+					cd.resolve(tds);
+				}*/
 				/*if (bloc.resolve(tds)) {
 					System.out.println("TDS OK" + tds);
 					if (bloc.checkType()) {
@@ -193,17 +196,17 @@ Container ::= Interface : interf
 		
 Interface ::= UL_Interface PooDeclaration : declaration ExtensionsI : extensionsI UL_Accolade_Ouvrante Entetes : entetes UL_Accolade_Fermante
 			{:
-				RESULT = new InterfaceDeclaration(declaration, extensions, entetes);
+				RESULT = new InterfaceDeclaration(declaration, extensionsI, entetes);
 			:}
 		; 
 
 Classe ::=  UL_Class PooDeclaration : declaration Extension : extension Implementations:implementations  UL_Accolade_Ouvrante Definitions : definitions UL_Accolade_Fermante
 			{:
-				RESULT = new ClasseDeclaration(0, declaration, extensions, definitions);
+				RESULT = new ClasseDeclaration(0, declaration, extension, implementations, definitions);
 			:}
 			| FinalOrAbstract : fOrA UL_Class PooDeclaration : declaration Extension : extension Implementations:implementations  UL_Accolade_Ouvrante Definitions : definitions UL_Accolade_Fermante
 			{:
-				RESULT = new ClasseDeclaration(fOrA, declaration, extensions, definitions); 
+				RESULT = new ClasseDeclaration(fOrA, declaration, extension,implementations, definitions); 
 			:}		
 		;
 
@@ -218,11 +221,12 @@ Extension ::=  UL_Extends Instanciation:instanciation
 		:} 
 	;
 
-Implementations ::= UL_Implements Instanciations 
+Implementations ::= UL_Implements Instanciations:instanciations
 			{:
 				RESULT = instanciations;
 			:}
-			|{:
+			|
+			{:
 				RESULT = new LinkedList<Instanciation>();
 			:}
 		; 
@@ -318,7 +322,7 @@ Instanciations ::= Instanciation:instanciation
 	
 	
 	
-Entetes ::= Entetes:entetes Entete:entete
+Entetes ::= Entetes:entetes Entete:entete UL_Point_Virgule
 		{:
 			entetes.add(entete);
 			RESULT = entetes;	
@@ -328,7 +332,7 @@ Entetes ::= Entetes:entetes Entete:entete
 		:}
 	;
 	
-Entete ::= Type:type UL_Identificateur:nom UL_Parenthese_Ouvrante Parameters: parameters UL_Parenthese_Fermante   UL_Point_Virgule 
+Entete ::= Type:type UL_Identificateur:nom UL_Parenthese_Ouvrante Parameters: parameters UL_Parenthese_Fermante
 		{: 
 			RESULT = new MethodeSignature(nom,type,parameters);
 		:}
@@ -348,23 +352,23 @@ Definitions ::= Definitions:definitions Definition:definition
 	
 Definition ::= PublicOrPrivate:publicOrPrivate  Static:isStatic UL_Final AttributFinal:attributFinal
 		{:
-			RESULT = new Definition(publicOrPrivate,isStatic,true,attributFinal);
+			RESULT = new Definition(publicOrPrivate,isStatic,1,attributFinal);
 		:}
 		|PublicOrPrivate:publicOrPrivate  Static:isStatic Attribut:attribut
 		{:
-			RESULT = new Definition(publicOrPrivate,isStatic,false,attribut);
+			RESULT = new Definition(publicOrPrivate,isStatic,0,attribut);
 		:}
-		| PublicOrPrivate:publicOrPrivate  Static:istatic UL_Final Methode:methode
+		| PublicOrPrivate:publicOrPrivate  Static:isStatic UL_Final Methode:methode
 		{:
- 			RESULT = new Definition(publicOrPrivate,isStatic,false,methode);
+ 			RESULT = new Definition(publicOrPrivate,isStatic,1,methode);
 		:}
-		| PublicOrPrivate:publicOrPrivate  Static:istatic UL_Abstract Methode:methode
+		| PublicOrPrivate:publicOrPrivate  Static:isStatic UL_Abstract Methode:methode
 		{:
- 			RESULT = new Definition(publicOrPrivate,isStatic,false,methode);
+ 			RESULT = new Definition(publicOrPrivate,isStatic,2,methode);
 		:}
-		| PublicOrPrivate:publicOrPrivate  Static:istatic Methode:methode 
+		| PublicOrPrivate:publicOrPrivate  Static:isStatic Methode:methode 
 		{:
- 			RESULT = new Definition(publicOrPrivate,isStatic,false,methode);
+ 			RESULT = new Definition(publicOrPrivate,isStatic,0,methode);
 		:}
 /* Conflit		| PublicOrPrivate:publicOrPrivate  UL_IdentificateurType:ident UL_Parenthese_Ouvrante Parameters:parameters UL_Parenthese_Fermante Bloc:bloc
 		{:
@@ -399,17 +403,17 @@ Methode ::=  Entete:entete Bloc:bloc
 	;	 
 
 
-Attribut ::= Type:type Identifiant:ident UL_Point_Virgule
+Attribut ::= Type:type UL_Identificateur:ident UL_Point_Virgule
 		 {:
 			RESULT = new Attribut(type,ident);
 		 :}
-		| Type:type Identifiant:ident UL_Egal Expression:expression UL_Point_Virgule
+		| Type:type UL_Identificateur:ident UL_Egal Expression:expression UL_Point_Virgule
 		{:
 			RESULT  = new Attribut(type,ident,expression);
 		:}
 	  ;
 		
-AttributFinal ::= Type:type Identifiant:ident UL_Egal Expression:expression UL_Point_Virgule
+AttributFinal ::= Type:type UL_Identificateur:ident UL_Egal Expression:expression UL_Point_Virgule
 		{:
 			RESULT  = new Attribut(type,ident,expression);
 		:}

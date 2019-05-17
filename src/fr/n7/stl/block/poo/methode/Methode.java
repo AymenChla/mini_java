@@ -1,5 +1,6 @@
 package fr.n7.stl.block.poo.methode;
 
+import fr.n7.stl.block.ast.Block;
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
@@ -8,6 +9,18 @@ import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
 
 public class Methode {
+	
+	MethodeSignature entete;
+	Block bloc;
+	
+	
+	
+	public Methode(MethodeSignature entete, Block bloc) {
+		super();
+		this.entete = entete;
+		this.bloc = bloc;
+	}
+
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
 		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
 	}

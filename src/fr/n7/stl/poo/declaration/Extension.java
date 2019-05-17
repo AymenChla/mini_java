@@ -4,10 +4,20 @@ import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;
+import fr.n7.stl.poo.type.Instanciation;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
 
 public class Extension {
+	
+	Instanciation instanciation;
+	
+	public Extension() {
+	}
+	public Extension(Instanciation instanciation) {
+		this.instanciation = instanciation;
+	}
+
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
 		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
 	}
