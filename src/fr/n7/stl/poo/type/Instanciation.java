@@ -6,12 +6,15 @@ import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;
+import fr.n7.stl.poo.declaration.PooDeclaration;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
+import fr.n7.stl.util.Logger;
 
 public class Instanciation implements Type {
 	String name;
 	List<Instanciation> instanciations;
+	PooDeclaration declaration;
 	
 
 	public Instanciation(String name, List<Instanciation> instanciations) {
@@ -26,7 +29,22 @@ public class Instanciation implements Type {
 	}
 
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
-		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+		
+		if(_scope.knows(this.name)){
+			this.declaration = (PooDeclaration) _scope.get(this.name);
+			
+			boolean result = true;
+			if( this.instanciations != null)
+				for(Instanciation i : this.instanciations){
+					result = result && i.resolve(_scope);
+				}
+			
+			return result;
+		}
+		else{
+			Logger.error("The Name " +this.name+" doesnt exist ...");
+			return false;
+		}
 	}
 	
 	public Type getType()

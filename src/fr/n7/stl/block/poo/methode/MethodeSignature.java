@@ -9,8 +9,9 @@ import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
+import fr.n7.stl.util.Logger;
 
-public class MethodeSignature {
+public class MethodeSignature implements Declaration {
 	
 	Type type;
 	String name;
@@ -25,16 +26,29 @@ public class MethodeSignature {
 	}
 
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
-		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+		if(_scope.accepts(this)){
+			_scope.register(this);
+		}
+		else{
+			Logger.error("The name of this method " + this.getName() + " already exists");
+			return false;
+		}
+		
+		return true;
 	}
 	
 	public Type getType()
 	{
-		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+		return this.type;
 	}
 	
 	public Fragment getCode(TAMFactory _factory)
 	{
 		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+	}
+
+	@Override
+	public String getName() {
+		return this.name;
 	}
 }

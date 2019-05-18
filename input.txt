@@ -1,15 +1,27 @@
-class XXX extends X<Y,Z> implements Y<A,B>,C {
-	public int x ;	
-	private int y;
+class A extends Y implements Y {
 	
-	public final int z = 0;
+	public int x ;	
+	public int y;
+	
+	public final int p = 0;
 	
 	public int getX (int x){
+	 B a = new B();
+	 int x = a.getX();
 	 return x;
 	} 
 }
 
-interface YYY extends A<H,L>,J{
+class B extends Y implements Y {
+	public int y;
+	
+	public int getX (int x){
+		return x;
+	} 
+	
+}
+
+interface Y extends A{
 	 int getX(int y);
 	 int getY(int y);
 }

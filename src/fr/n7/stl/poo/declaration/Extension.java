@@ -8,7 +8,7 @@ import fr.n7.stl.poo.type.Instanciation;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
 
-public class Extension {
+public class Extension implements Type {
 	
 	Instanciation instanciation;
 	
@@ -19,16 +19,42 @@ public class Extension {
 	}
 
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
-		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+		return this.instanciation.resolve(_scope);
 	}
 	
 	public Type getType()
 	{
-		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+		return this.instanciation.getType();
 	}
 	
 	public Fragment getCode(TAMFactory _factory)
 	{
 		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+	}
+	public boolean isPresent() {
+		if (this.instanciation == null){
+			return false;
+		}
+		return true;
+	}
+	@Override
+	public boolean equalsTo(Type _other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public boolean compatibleWith(Type _other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public Type merge(Type _other) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public int length() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

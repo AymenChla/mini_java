@@ -1,6 +1,7 @@
 package fr.n7.stl.poo.declaration;
 
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
+
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;

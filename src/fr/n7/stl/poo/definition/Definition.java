@@ -16,6 +16,11 @@ public class Definition {
 	Attribut attribut;
 	Methode methode;
 	
+	public Definition() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	public Definition(boolean publicOrPrivate, boolean isStatic, int finalOrAbstract, Methode methode) {
 		super();
 		this.publicOrPrivate = publicOrPrivate;
@@ -35,7 +40,13 @@ public class Definition {
 	
 	
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
-		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+		boolean result= true;
+		
+		if(this.attribut != null ) result = this.attribut.resolve(_scope);
+		if(this.methode != null ) result  = this.methode.resolve(_scope);
+		
+		return result;
+ 		
 	}
 	
 	public Type getType()
