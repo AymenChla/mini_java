@@ -5,6 +5,7 @@ import java.util.*;
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
+import fr.n7.stl.block.ast.scope.SymbolTable;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.block.poo.methode.MethodeSignature;
 import fr.n7.stl.poo.type.Instanciation;
@@ -48,8 +49,10 @@ public class InterfaceDeclaration extends ContainerDeclaration{
 			result = result && i.resolve(_scope); 
 		}
 		
+		HierarchicalScope<Declaration> tbs = new SymbolTable(_scope);
+		
 		for(MethodeSignature m : this.entetes){
-			result = result && m.resolve(_scope); 
+			result = result && m.resolve(tbs); 
 		}
 		
 		return result;

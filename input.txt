@@ -1,28 +1,14 @@
 class A extends Y implements Y {
 	
-	public int x ;	
-	public int y;
+	public Y b = new LL();
 	
-	public final int p = 0;
-	
-	public int getX (int x){
-	 B a = new B();
-	 int x = a.getX();
-	 return x;
-	} 
-}
-
-class B extends Y implements Y {
-	public int y;
-	
-	public int getX (int x){
-		return x;
-	} 
 	
 }
-
 interface Y extends A{
+
 	 int getX(int y);
 	 int getY(int y);
 }
+
+
 

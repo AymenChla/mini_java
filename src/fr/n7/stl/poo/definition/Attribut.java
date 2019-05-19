@@ -6,6 +6,7 @@ import fr.n7.stl.block.ast.instruction.declaration.VariableDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;
+import fr.n7.stl.poo.call.ConstructorCall;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.util.Logger;
@@ -32,19 +33,33 @@ public class Attribut implements Declaration {
 	}
 
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
-		Declaration d = new VariableDeclaration(this.ident, this.type, this.expression);
-		if(_scope.accepts(d))
-		{
-			_scope.register(d);
+		boolean result = type.resolve(_scope);
+		if(this.expression != null){
+			result = ((ConstructorCall)expression).resolve(_scope);
+			Declaration d = new VariableDeclaration(this.ident, this.type, this.expression);
+			if(_scope.accepts(d))
+			{
+				_scope.register(d);
+				result = this.expression.resolve(_scope);
+			}
+			else{
+				Logger.error("This attribut " + this.ident + " already exists");
+			}
 		}
 		else{
-			Logger.error("This attribut " + this.ident + " already exists");
+			Declaration d = new VariableDeclaration(this.ident, this.type, null);
+			if(_scope.accepts(d))
+			{
+				_scope.register(d);
+			}
+			else{
+				Logger.error("This attribut " + this.ident + " already exists");
+			}
+			
 		}
-		 if(this.expression == null ){
-			 return true;
-		 }
 		 
-		 return this.expression.resolve(_scope);
+		 
+		 return result;
 		
 	}
 	
