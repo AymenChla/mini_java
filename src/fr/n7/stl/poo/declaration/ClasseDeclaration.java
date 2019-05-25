@@ -42,6 +42,7 @@ public class ClasseDeclaration extends ContainerDeclaration implements Type {
 			Logger.error("The name " +this.declaration.getName()+" of this Class is already used ");
 			return false;
 		}
+		this.declaration.setClasse(true);
 		_scope.register(this.declaration);
 		return true;
 	}

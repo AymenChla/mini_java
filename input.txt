@@ -1,6 +1,20 @@
 class A extends Y implements Y {
+	public int x;
+
+	public Y b = new X();
 	
-	public Y b = new LL();
+	
+}
+
+class X extends Y implements Y {
+	
+	public int x;
+	public int getX(int x){
+		Y p = new X();
+		x = p.x; 
+	}
+	
+	
 	
 	
 }

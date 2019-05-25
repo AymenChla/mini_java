@@ -12,6 +12,14 @@ import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.util.Logger;
 
 public class Instanciation implements Type {
+	public PooDeclaration getDeclaration() {
+		return declaration;
+	}
+
+	public void setDeclaration(PooDeclaration declaration) {
+		this.declaration = declaration;
+	}
+
 	String name;
 	List<Instanciation> instanciations;
 	PooDeclaration declaration;

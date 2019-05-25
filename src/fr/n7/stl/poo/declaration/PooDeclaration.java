@@ -11,7 +11,15 @@ import fr.n7.stl.tam.ast.TAMFactory;
 
 public class PooDeclaration implements Declaration {
 	
-	
+	boolean isClasse;
+	public boolean isClasse() {
+		return isClasse;
+	}
+
+	public void setClasse(boolean isClasse) {
+		this.isClasse = isClasse;
+	}
+
 	String name;
 	List<GenericTypeDeclaration> genDeclarations;
 	
@@ -45,4 +53,5 @@ public class PooDeclaration implements Declaration {
 	public String getName() {
 		return this.name;
 	}
+
 }

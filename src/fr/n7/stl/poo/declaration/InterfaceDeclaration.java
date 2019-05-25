@@ -36,6 +36,7 @@ public class InterfaceDeclaration extends ContainerDeclaration{
 			Logger.error("The name " +this.declaration.getName()+" of this Interface is already used ");
 			return false;
 		}
+		this.declaration.setClasse(false);
 		_scope.register(this.declaration);
 		System.out.println(_scope.toString());
 		return true;

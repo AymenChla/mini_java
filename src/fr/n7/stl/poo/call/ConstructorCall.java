@@ -9,8 +9,14 @@ import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.poo.type.Instanciation;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
+import fr.n7.stl.util.Logger;
 
 public class ConstructorCall implements Expression{
+
+	public ConstructorCall(Type type) {
+		super();
+		this.type = type;
+	}
 
 	public ConstructorCall(Type type, List<Expression> parametres) {
 		super();
@@ -23,15 +29,20 @@ public class ConstructorCall implements Expression{
 	
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
 		
-		System.out.println("WWWWWWWWWWWWWWWWWWWWWWW");
 		boolean result = true;
 		
 		Instanciation in = (Instanciation) this.type;
 		result = in.resolve(_scope); 
-		
-		for(Expression e : this.parametres){
-			result = result && e.resolve(_scope);
+		if(!in.getDeclaration().isClasse())
+			Logger.error("We cant use an Interface as a Counstuctor");
+		if(this.parametres != null){
+			
+			for(Expression e : this.parametres){
+				result = result && e.resolve(_scope);
+			}
+			
 		}
+		
 		return result;
 	}
 
