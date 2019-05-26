@@ -2,12 +2,16 @@ package fr.n7.stl.block.poo.methode;
 
 import fr.n7.stl.block.ast.Block;
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
+import fr.n7.stl.block.ast.expression.Expression;
+import fr.n7.stl.block.ast.instruction.Assignment;
 import fr.n7.stl.block.ast.instruction.Instruction;
 import fr.n7.stl.block.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.scope.SymbolTable;
 import fr.n7.stl.block.ast.type.Type;
+import fr.n7.stl.poo.call.AttributAccess;
+import fr.n7.stl.poo.call.AttributAssignment;
 import fr.n7.stl.poo.definition.Definition;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
@@ -18,9 +22,18 @@ public class Methode extends Definition implements Declaration,Instruction{
 	
 	MethodeSignature entete;
 	Block bloc;
+	boolean isStatic = false;
 	
 	
 	
+	public boolean isStatic() {
+		return isStatic;
+	}
+
+	public void setStatic(boolean isStatic) {
+		this.isStatic = isStatic;
+	}
+
 	public Methode(MethodeSignature entete, Block bloc) {
 		this.entete = entete;
 		this.bloc = bloc;
@@ -46,6 +59,44 @@ public class Methode extends Definition implements Declaration,Instruction{
 				  }
 			  }
 			  this.bloc.resolve(nvlTable);
+			  
+			  
+			  if(this.isStatic())
+			  {
+				  
+				  for(Instruction i: this.bloc.getInstructions())
+				  {
+					  if(i instanceof Assignment)
+					  {
+						  
+						  Assignment assignment = (Assignment) i;
+						
+						  if(assignment.getAssignable() instanceof AttributAssignment)
+						  {
+							 
+							  AttributAssignment access = (AttributAssignment) assignment.getAssignable();
+							if(!access.getAttribut().isStatic())
+							{
+								Logger.error("Can't access to not static attribut inside static methode");
+							}
+						  }	
+						  
+						  if(assignment.getValue() instanceof AttributAssignment)
+						  {
+
+							AttributAssignment access = (AttributAssignment) assignment.getValue();
+							if(!access.getAttribut().isStatic())
+							{
+								Logger.error("Can't access to not static attribut inside static methode");
+							}
+						  }	
+					
+					  }
+				  }
+			  }
+			  
+			  
+			  
 			  return result;
 		}
 		
@@ -53,7 +104,7 @@ public class Methode extends Definition implements Declaration,Instruction{
 	
 	public Type getType()
 	{
-		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+		return this.entete.getType();
 	}
 	
 	public Fragment getCode(TAMFactory _factory)
@@ -63,6 +114,8 @@ public class Methode extends Definition implements Declaration,Instruction{
 
 	@Override
 	public boolean checkType() {
+		
+		//throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
 		return this.bloc.getTypeOfReturn().compatibleWith(this.getType());
 	}
 

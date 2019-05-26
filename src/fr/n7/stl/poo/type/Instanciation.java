@@ -3,6 +3,7 @@ package fr.n7.stl.poo.type;
 import java.util.List;
 
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
+import fr.n7.stl.block.ast.expression.Expression;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;
@@ -11,7 +12,14 @@ import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.util.Logger;
 
-public class Instanciation implements Type {
+public class Instanciation implements Type,Expression {
+	
+
+	String name;
+	List<Instanciation> instanciations;
+	PooDeclaration declaration;
+	
+	
 	public PooDeclaration getDeclaration() {
 		return declaration;
 	}
@@ -20,9 +28,6 @@ public class Instanciation implements Type {
 		this.declaration = declaration;
 	}
 
-	String name;
-	List<Instanciation> instanciations;
-	PooDeclaration declaration;
 	
 
 	public Instanciation(String name, List<Instanciation> instanciations) {
@@ -57,7 +62,7 @@ public class Instanciation implements Type {
 	
 	public Type getType()
 	{
-		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+		return this.declaration.getType();
 	}
 	
 	public Fragment getCode(TAMFactory _factory)
@@ -88,4 +93,14 @@ public class Instanciation implements Type {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	
 }

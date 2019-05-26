@@ -8,7 +8,9 @@ import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.scope.SymbolTable;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.block.poo.methode.MethodeSignature;
+import fr.n7.stl.poo.definition.Definition;
 import fr.n7.stl.poo.type.Instanciation;
+import fr.n7.stl.poo.type.PooType;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.util.Logger;
@@ -38,7 +40,7 @@ public class InterfaceDeclaration extends ContainerDeclaration{
 		}
 		this.declaration.setClasse(false);
 		_scope.register(this.declaration);
-		System.out.println(_scope.toString());
+		
 		return true;
 	}
 	
@@ -54,6 +56,23 @@ public class InterfaceDeclaration extends ContainerDeclaration{
 		
 		for(MethodeSignature m : this.entetes){
 			result = result && m.resolve(tbs); 
+		}
+		
+		return result;
+	}
+	
+	public boolean checkType()
+	{
+		boolean result = true;
+		
+		for(Instanciation i : this.extensions)
+		{
+			Type t2 = i.getType();
+			if(!t2.equalsTo(PooType.ClassType))
+			{
+				Logger.error("extends must be used with Class");
+				return false;
+			}	
 		}
 		
 		return result;

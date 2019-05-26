@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.reflect.Typed;
+
 
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.scope.Declaration;
@@ -12,8 +12,10 @@ import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.scope.SymbolTable;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.block.poo.methode.Methode;
+import fr.n7.stl.poo.definition.Attribut;
 import fr.n7.stl.poo.definition.Definition;
 import fr.n7.stl.poo.type.Instanciation;
+import fr.n7.stl.poo.type.PooType;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.util.Logger;
@@ -34,6 +36,7 @@ public class ClasseDeclaration extends ContainerDeclaration implements Type {
 		this.extension = extension;
 		this.implementations = implementations;
 		this.definitions = definitions;
+		this.declaration.setDefinitions(definitions);
 	}
 	
 	
@@ -67,7 +70,41 @@ public class ClasseDeclaration extends ContainerDeclaration implements Type {
 			result = result && d.resolve(newSymboleTable); 
 		}
 		
-	System.out.println(newSymboleTable.toString());
+		//System.out.println(newSymboleTable.toString());
+		
+		return result;
+	}
+	
+	public boolean checkType()
+	{
+		boolean result = true;
+		if(this.extension.instanciation != null)
+		{
+			Type t1 = this.extension.getType();
+			if(!t1.equalsTo(PooType.ClassType))
+			{
+				Logger.error("extends must be used with class");
+				return false;
+			}
+		}
+		
+		for(Instanciation i : this.implementations)
+		{
+			Type t2 = i.getType();
+			if(!t2.equalsTo(PooType.InterfaceType))
+			{
+				Logger.error("implements must be used with Interface");
+				return false;
+			}
+		}
+		
+		System.out.println(this.definitions.size());
+		for(Definition d: this.definitions)
+		{
+			result = d.checkType() && result;
+		}
+		
+	
 		
 		return result;
 	}
@@ -134,8 +171,9 @@ public class ClasseDeclaration extends ContainerDeclaration implements Type {
 				methods.add((Methode) i);
 		return methods;
 	}
-		
-		
+
+
+
 	
 	
 	

@@ -72,7 +72,7 @@ terminal				UL_Double_Egal, UL_Exclamation_Egal;
 terminal				UL_Si, UL_Sinon, UL_Tant_Que, UL_Nouveau, UL_Afficher, UL_Retour;
 terminal				UL_Definition_Constante, UL_Definition_Type, UL_Enregistrement, UL_Enumeration;
 terminal				UL_Type_Booleen, UL_Type_Caractere, UL_Type_Chaine, UL_Type_Entier, UL_Type_Flottant, UL_Type_Vide;
-terminal 				UL_Interface, UL_Extends, UL_Final, UL_Abstract, UL_Public, UL_Private, UL_Static, UL_Class, UL_Implements, UL_Protected;
+terminal 				UL_Interface, UL_Extends, UL_Final, UL_Abstract, UL_Public, UL_Private, UL_Static, UL_Class, UL_Implements, UL_Protected, UL_This;
 terminal String		UL_IdentificateurType, UL_Identificateur, UL_Chaine, UL_Caractere;
 terminal String		UL_Nombre_Entier, UL_Nombre_Flottant, UL_Nul, UL_Vrai, UL_Faux; // Valeur transmise par l'analyseur lexical
 
@@ -146,32 +146,63 @@ Program ::= Containers : containers
 				
 				 
 				SymbolTable tds = new SymbolTable();
-				System.out.println("Containers : classes");
+				//System.out.println("Containers : classes");
+
+				boolean resolveResult = true;
 				for(ContainerDeclaration cd : containers){
 					if (cd instanceof ClasseDeclaration)
 					{
 						ClasseDeclaration cld = (ClasseDeclaration) cd;
-						cld.resolvePre(tds);
+						resolveResult =  cld.resolvePre(tds) && resolveResult;
 					}
 					else
 					{
 						InterfaceDeclaration id = (InterfaceDeclaration) cd;
-						id.resolvePre(tds);
+						resolveResult = id.resolvePre(tds) && resolveResult;
 					}
 				}
 				for(ContainerDeclaration cd : containers){
 					if (cd instanceof ClasseDeclaration)
 					{
 						ClasseDeclaration cld = (ClasseDeclaration) cd;
-						cld.resolve(tds);
+						resolveResult = cld.resolve(tds) && resolveResult;
 					}
 					else
 					{
 						InterfaceDeclaration id = (InterfaceDeclaration) cd;
-						id.resolve(tds);
+						resolveResult = id.resolve(tds) && resolveResult;
 					}
 
 				}
+				
+				if(!resolveResult)
+					System.out.println("Resolve KO");
+				else{
+					System.out.println("Resolve OK");
+			
+					boolean typeResult = true;
+					for(ContainerDeclaration cd : containers){
+						if (cd instanceof ClasseDeclaration)
+						{
+							ClasseDeclaration cld = (ClasseDeclaration) cd;
+							typeResult = cld.checkType() && typeResult;
+						}
+						else	
+						{
+							InterfaceDeclaration id = (InterfaceDeclaration) cd;
+							typeResult = id.checkType() && typeResult;
+						}			
+					}
+
+					if(!typeResult)
+						System.out.println("Type KO");
+					else{
+						System.out.println("Type OK");
+
+					}
+
+				}
+				
 				/*if (bloc.resolve(tds)) {
 					System.out.println("TDS OK" + tds);
 					if (bloc.checkType()) {
@@ -402,6 +433,7 @@ Definition ::= PublicOrPrivate:publicOrPrivate  Static:isStatic UL_Final Attribu
 Static	::= UL_Static
 		{: 
 			RESULT = true; 
+
 		:}
 		| 
 		{: 
@@ -432,13 +464,13 @@ Attribut ::= Type:type UL_Identificateur:ident UL_Point_Virgule
 		 :}
 		| Type:type UL_Identificateur:ident UL_Egal Expression:expression UL_Point_Virgule
 		{:
-			RESULT  = new Attribut(type,ident,expression);
+			RESULT  = new Attribut(type,ident,expression,false);
 		:}
 	  ;
 		
 AttributFinal ::= Type:type UL_Identificateur:ident UL_Egal Expression:expression UL_Point_Virgule
 		{:
-			RESULT  = new Attribut(type,ident,expression);
+			RESULT  = new Attribut(type,ident,expression,true);
 		:}
 	   ;
 	   
@@ -714,6 +746,10 @@ Affectable ::= UL_Identificateur:nom
 				{:
 					RESULT = new VariableAssignment( nom );
 				:}
+			| UL_This UL_Point UL_Identificateur:attribut
+				{:
+					RESULT = new AttributAssignment(attribut);
+				:}
 /* Bloc			| UL_Asterisque Affectable:pointeur
 				{:
 					RESULT = new PointerAssignment( pointeur );
@@ -731,11 +767,8 @@ Affectable ::= UL_Identificateur:nom
 					RESULT = new FieldAssignment( enregistrement, etiquette);
 				:}
 				
-			| Affectable:classe UL_Point UL_Identificateur:attributName
-				{:
-					RESULT = new AttributAssignment(classe,attributeName);
-				:}
-			;
+			
+		;
 			            
 Expression ::= /* Affectable:affectable UL_Egal Expression:expression 
 				{:
@@ -925,6 +958,15 @@ Expression ::= /* Affectable:affectable UL_Egal Expression:expression
 			| Expression:expression UL_Point UL_Identificateur:methode UL_Parenthese_Ouvrante UL_Parenthese_Fermante 
 				{:
 					RESULT = new MethodAccess(expression, methode); 
+				:}
+			| Instanciation:instanciation
+				{:
+					RESULT = instanciation; 
 				:} 	  
-			 ;
+				
+			| UL_This UL_Point UL_Identificateur:attribut
+				{:
+					RESULT = new AttributAssignment(attribut);
+				:}
+			;
        

@@ -7,6 +7,11 @@ import fr.n7.stl.block.ast.type.AtomicType;
 import fr.n7.stl.block.ast.type.RecordType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.block.ast.type.declaration.FieldDeclaration;
+import fr.n7.stl.block.poo.methode.Methode;
+import fr.n7.stl.poo.declaration.ClasseDeclaration;
+import fr.n7.stl.poo.declaration.PooDeclaration;
+import fr.n7.stl.poo.definition.Attribut;
+import fr.n7.stl.poo.type.Instanciation;
 import fr.n7.stl.util.Logger;
 
 /**
@@ -20,6 +25,7 @@ public abstract class AbstractField implements Expression {
 	protected Expression record;
 	protected String name;
 	protected FieldDeclaration field;
+	protected boolean isStatic = false;
 	
 	/**
 	 * Construction for the implementation of a record field access expression Abstract Syntax Tree node.
@@ -44,7 +50,35 @@ public abstract class AbstractField implements Expression {
 	 */
 	@Override
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
-		return this.record.resolve(_scope);
+		boolean result = this.record.resolve(_scope);
+		if(record instanceof Instanciation)
+		{
+			Instanciation inst = (Instanciation) this.record;
+			
+			if(_scope.knows(inst.getName()))
+			{
+				if(_scope.get(inst.getName()) instanceof PooDeclaration)
+				{
+					PooDeclaration cld = (PooDeclaration) _scope.get(inst.getName());
+					cld = (PooDeclaration) _scope.get(cld.getName());
+					for(Attribut a : cld.getStaticAttributsOfClass())
+						if(a.getName().equals(this.name))
+						{
+							this.isStatic = true;
+							return result;
+						}
+					Logger.error("The name of this attribut does not exist or not static attribut");
+				}
+				else{
+					Logger.error("class doesn't exist");
+				}
+			}
+		}
+		else{
+			Logger.error("########");
+		}
+		
+		return false;
 	}
 
 	/**
@@ -64,4 +98,13 @@ public abstract class AbstractField implements Expression {
 		}
 	}
 
+	public boolean isStatic() {
+		return isStatic;
+	}
+
+	public void setStatic(boolean isStatic) {
+		this.isStatic = isStatic;
+	}
+
+	
 }

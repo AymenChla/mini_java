@@ -8,7 +8,7 @@ import fr.n7.stl.block.poo.methode.Methode;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
 
-public class Definition {
+public class Definition implements Declaration{
 	
 	boolean publicOrPrivate;
 	boolean isStatic;
@@ -16,6 +16,24 @@ public class Definition {
 	Attribut attribut;
 	Methode methode;
 	
+	
+	
+	public Attribut getAttribut() {
+		return attribut;
+	}
+
+	public void setAttribut(Attribut attribut) {
+		this.attribut = attribut;
+	}
+
+	public Methode getMethode() {
+		return methode;
+	}
+
+	public void setMethode(Methode methode) {
+		this.methode = methode;
+	}
+
 	public Definition() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -27,6 +45,7 @@ public class Definition {
 		this.isStatic = isStatic;
 		this.finalOrAbstract = finalOrAbstract;
 		this.methode = methode;
+		this.methode.setStatic(isStatic);
 	}
 
 	public Definition(boolean publicOrPrivate, boolean isStatic, int finalOrAbstract, Attribut attribut) {
@@ -35,6 +54,7 @@ public class Definition {
 		this.isStatic = isStatic;
 		this.finalOrAbstract = finalOrAbstract;
 		this.attribut = attribut;
+		this.attribut.setStatic(isStatic);
 	}
 	
 	
@@ -58,4 +78,33 @@ public class Definition {
 	{
 		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
 	}
+
+	public boolean isStatic() {
+		return isStatic;
+	}
+
+	public void setStatic(boolean isStatic) {
+		this.isStatic = isStatic;
+	}
+
+	
+	public boolean checkType() {
+		if(this.methode != null) 
+			return this.methode.checkType();
+		else if(this.attribut != null)
+			return this.attribut.checkType();
+		else 
+			throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+	}
+
+	@Override
+	public String getName() {
+		if(this.methode != null) 
+			return this.methode.getName();
+		else if (this.attribut != null)
+			return this.attribut.getName();
+		return "AA";
+	}
+	
+	
 }

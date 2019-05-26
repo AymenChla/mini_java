@@ -1,23 +1,29 @@
-class A extends Y implements Y {
-	public int x;
-
-	public Y b = new X();
+class A extends X implements Y {
 	
+	public static int x;
+	public int z;
+	public X b = new X();
 	
-}
-
-class X extends Y implements Y {
-	
-	public int x;
-	public int getX(int x){
-		Y p = new X();
-		x = p.x; 
+	public static int fonct(int e)
+	{
+		return 2;
 	}
 	
+}
+
+class X extends A implements Y {
 	
+	private int a = 1;
+	public int getX(int y){
+		
+		int z = A.x; 
+		int c = A.fonct(z);
+		return 2;
+	}	
 	
 	
 }
+
 interface Y extends A{
 
 	 int getX(int y);

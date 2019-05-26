@@ -5,6 +5,7 @@ package fr.n7.stl.block.ast.expression.assignable;
 
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.expression.AbstractIdentifier;
+import fr.n7.stl.block.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.block.ast.instruction.declaration.VariableDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
@@ -20,7 +21,7 @@ import fr.n7.stl.util.Logger;
  */
 public class VariableAssignment extends AbstractIdentifier implements AssignableExpression {
 	
-	protected VariableDeclaration declaration;
+	protected Declaration declaration;
 
 	/**
 	 * Creates a variable assignment expression Abstract Syntax Tree node.
@@ -37,10 +38,17 @@ public class VariableAssignment extends AbstractIdentifier implements Assignable
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
 		if (((HierarchicalScope<Declaration>)_scope).knows(this.name)) {
 			Declaration _declaration = _scope.get(this.name);
+			
 			if (_declaration instanceof VariableDeclaration) {
 				this.declaration = ((VariableDeclaration) _declaration);
 				return true;
-			} else {
+			}
+			else if(_declaration instanceof ParameterDeclaration)
+			{
+				this.declaration = (ParameterDeclaration) _declaration;
+				return true;
+			}
+			else {
 				Logger.error("The declaration for " + this.name + " is of the wrong kind.");
 				return false;
 			}
@@ -64,8 +72,8 @@ public class VariableAssignment extends AbstractIdentifier implements Assignable
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
 		Fragment frag = _factory.createFragment();
-		
-		frag.add(_factory.createLoadA(this.declaration.getRegister(), this.declaration.getOffset()));
+		VariableDeclaration vd = (VariableDeclaration) this.declaration;
+		frag.add(_factory.createLoadA(vd.getRegister(), vd.getOffset()));
 		
 		return frag;
 	}

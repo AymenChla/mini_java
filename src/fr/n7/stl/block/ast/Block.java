@@ -126,4 +126,15 @@ public class Block {
 		return frag;
 	}
 
+
+	public List<Instruction> getInstructions() {
+		return instructions;
+	}
+
+
+	public void setInstructions(List<Instruction> instructions) {
+		this.instructions = instructions;
+	}
+
+	
 }

@@ -91,4 +91,21 @@ public class Assignment implements Instruction, Expression {
 		return frag;
 	}
 
+	public Expression getValue() {
+		return value;
+	}
+
+	public void setValue(Expression value) {
+		this.value = value;
+	}
+
+	public AssignableExpression getAssignable() {
+		return assignable;
+	}
+
+	public void setAssignable(AssignableExpression assignable) {
+		this.assignable = assignable;
+	}
+
+	
 }
