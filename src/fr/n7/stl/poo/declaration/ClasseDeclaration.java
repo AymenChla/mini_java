@@ -37,6 +37,7 @@ public class ClasseDeclaration extends ContainerDeclaration implements Type {
 		this.implementations = implementations;
 		this.definitions = definitions;
 		this.declaration.setDefinitions(definitions);
+		this.declaration.setContainer(this);
 	}
 	
 	
@@ -170,6 +171,26 @@ public class ClasseDeclaration extends ContainerDeclaration implements Type {
 			if(i instanceof Methode)
 				methods.add((Methode) i);
 		return methods;
+	}
+
+
+	public Extension getExtension() {
+		return extension;
+	}
+
+
+	public void setExtension(Extension extension) {
+		this.extension = extension;
+	}
+
+
+	public List<Instanciation> getImplementations() {
+		return implementations;
+	}
+
+
+	public void setImplementations(List<Instanciation> implementations) {
+		this.implementations = implementations;
 	}
 
 

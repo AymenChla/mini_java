@@ -29,6 +29,7 @@ public class InterfaceDeclaration extends ContainerDeclaration{
 			this.declaration = declaration;
 			this.extensions = extensions;
 			this.entetes = entetes;
+			this.declaration.setContainer(this);
 		}
 		
 

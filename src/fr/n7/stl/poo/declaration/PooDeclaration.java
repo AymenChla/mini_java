@@ -18,6 +18,7 @@ public class PooDeclaration implements Declaration {
 	
 	boolean isClasse;
 	List<Definition> definitions;
+	ContainerDeclaration container;
 	
 	public boolean isClasse() {
 		return isClasse;
@@ -88,6 +89,14 @@ public class PooDeclaration implements Declaration {
 				methodes.add(i.getMethode());
 			
 		return methodes;
+	}
+
+	public ContainerDeclaration getContainer() {
+		return container;
+	}
+
+	public void setContainer(ContainerDeclaration container) {
+		this.container = container;
 	}
 		
 		

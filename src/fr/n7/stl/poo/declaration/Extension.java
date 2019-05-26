@@ -57,4 +57,12 @@ public class Extension implements Type {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	public Instanciation getInstanciation() {
+		return instanciation;
+	}
+	public void setInstanciation(Instanciation instanciation) {
+		this.instanciation = instanciation;
+	}
+	
+	
 }

@@ -2,7 +2,7 @@ class A extends X implements Y {
 	
 	public static int x;
 	public int z;
-	public X b = new X();
+	public B b = new X();
 	
 	public static int fonct(int e)
 	{
@@ -11,7 +11,7 @@ class A extends X implements Y {
 	
 }
 
-class X extends A implements Y {
+class X extends B implements Y {
 	
 	private int a = 1;
 	public int getX(int y){
@@ -30,5 +30,11 @@ interface Y extends A{
 	 int getY(int y);
 }
 
+interface Y1{
+}
+
+class B
+{
+}
 
 

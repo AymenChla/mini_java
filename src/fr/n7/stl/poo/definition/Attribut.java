@@ -7,6 +7,7 @@ import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.poo.call.ConstructorCall;
+import fr.n7.stl.poo.type.PooType;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.util.Logger;
@@ -99,7 +100,9 @@ public class Attribut extends Definition implements Declaration {
 	
 	public boolean checkType() {
 		if(this.expression != null)
+		{
 			return this.type.compatibleWith(this.expression.getType());
+		}
 		return true;
 	}
 	

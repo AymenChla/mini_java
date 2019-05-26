@@ -7,6 +7,7 @@ import fr.n7.stl.block.ast.expression.Expression;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;
+import fr.n7.stl.poo.declaration.ClasseDeclaration;
 import fr.n7.stl.poo.declaration.PooDeclaration;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
@@ -78,7 +79,37 @@ public class Instanciation implements Type,Expression {
 
 	@Override
 	public boolean compatibleWith(Type _other) {
-		// TODO Auto-generated method stub
+		if(_other instanceof Instanciation)
+		{
+			Instanciation other = (Instanciation) _other;
+			if(this.declaration.getName().equals(other.declaration.getName()))
+			{
+				return true;
+			}
+			
+			
+			if(other.declaration.isClasse())
+			{
+				//réference de type interface sur l'objet d'une classe implementant l'interface
+				ClasseDeclaration cd = (ClasseDeclaration) other.declaration.getContainer();
+				for(Instanciation i : cd.getImplementations())
+				{
+					if(this.declaration.getName().contentEquals(i.getName()))
+						return true;
+				}
+				
+				//réference de type classe sur l'objet d'une classe fils
+				if(cd.getExtension() != null)
+				{
+					String classeMere = cd.getExtension().getInstanciation().getName();
+					if(classeMere.equals(this.declaration.getName()))
+						return true;
+				}
+			}
+			
+			
+		}
+		
 		return false;
 	}
 
