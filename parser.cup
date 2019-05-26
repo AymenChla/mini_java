@@ -390,6 +390,11 @@ Entete ::= Type:type UL_Identificateur:nom UL_Parenthese_Ouvrante Parameters: pa
 		{: 
 			RESULT = new MethodeSignature(nom,type,parameters);
 		:}
+		|
+		Type:type UL_Identificateur:nom UL_Parenthese_Ouvrante UL_Parenthese_Fermante
+		{:
+			RESULT = new MethodeSignature(nom,type,null);
+		:}
 	;
 
 
@@ -404,6 +409,9 @@ Definitions ::= Definitions:definitions Definition:definition
 		:}
 	; 
 	
+
+
+		
 Definition ::= PublicOrPrivate:publicOrPrivate  Static:isStatic UL_Final AttributFinal:attributFinal
 		{:
 			RESULT = new Definition(publicOrPrivate,isStatic,1,attributFinal);
@@ -420,16 +428,28 @@ Definition ::= PublicOrPrivate:publicOrPrivate  Static:isStatic UL_Final Attribu
 		{:
  			RESULT = new Definition(publicOrPrivate,isStatic,2,methode);
 		:}
-		| PublicOrPrivate:publicOrPrivate  Static:isStatic Methode:methode 
+		| PublicOrPrivate:publicOrPrivate  Static:isStatic Methode:methode
 		{:
  			RESULT = new Definition(publicOrPrivate,isStatic,0,methode);
 		:}
-/* Conflit		| PublicOrPrivate:publicOrPrivate  UL_IdentificateurType:ident UL_Parenthese_Ouvrante Parameters:parameters UL_Parenthese_Fermante Bloc:bloc
+		/* conflicts | PublicOrPrivate:publicOrPrivate Instanciation:instanciation UL_Parenthese_Ouvrante Parameters:params UL_Parenthese_Fermante Bloc:bloc
+		{:
+			Construct construct = new Constructor(instanciation,params,bloc);
+ 			RESULT = new Definition(publicOrPrivate,construct);
+		:}
+		| PublicOrPrivate:publicOrPrivate Instanciation:instanciation UL_Parenthese_Ouvrante  UL_Parenthese_Fermante Bloc:bloc
+		{:
+			Construct construct = new Constructor(instanciation,null,bloc);
+			RESULT = new Definition(publicOrPrivate,construct);
+		:}*/
+		/* Conflit		| PublicOrPrivate:publicOrPrivate  UL_IdentificateurType:ident UL_Parenthese_Ouvrante Parameters:parameters UL_Parenthese_Fermante Bloc:bloc
 		{:
 			RESULT = new Definition(publicOrPrivate,ident,parameters,bloc);
 		:} */
 	;
-
+	
+		
+		
 Static	::= UL_Static
 		{: 
 			RESULT = true; 

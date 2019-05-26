@@ -3,14 +3,16 @@
  */
 package fr.n7.stl.block.ast.instruction;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import fr.n7.stl.block.ast.Block;
-import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.expression.Expression;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.AtomicType;
+import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
@@ -121,5 +123,16 @@ public class Conditional implements Instruction {
 		
 		
 	}
-
+	
+	public List<Type> getTypesOfReturn(){
+		List<Type> types = new ArrayList<Type>();
+		
+		types.addAll(thenBranch.getTypesOfReturn());
+		
+		if(elseBranch.isPresent())
+			types.addAll(elseBranch.get().getTypesOfReturn());
+		
+		return types;
+	}
+	
 }

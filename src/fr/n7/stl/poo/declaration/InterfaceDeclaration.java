@@ -88,6 +88,16 @@ public class InterfaceDeclaration extends ContainerDeclaration{
 	{
 		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
 	}
+
+
+	public List<MethodeSignature> getEntetes() {
+		return entetes;
+	}
+
+
+	public void setEntetes(List<MethodeSignature> entetes) {
+		this.entetes = entetes;
+	}
 		
 		
 		

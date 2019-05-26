@@ -13,6 +13,7 @@ import fr.n7.stl.block.ast.instruction.Instruction;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.scope.SymbolTable;
+import fr.n7.stl.block.ast.type.AtomicType;
 import fr.n7.stl.block.ast.type.FunctionType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
@@ -131,8 +132,15 @@ public class FunctionDeclaration implements Instruction, Declaration {
 	 */
 	@Override
 	public boolean checkType() {
-		return this.body.getTypeOfReturn().compatibleWith(this.type);
-		
+			List<Type> types = this.body.getTypesOfReturn();
+			
+			if(!(types.isEmpty() && this.type.equals(AtomicType.VoidType)))
+				for(Type t : types)
+				{
+					if(!t.compatibleWith(this.getType()))
+							return false;
+				}
+			return true;
 	}
 
 	/* (non-Javadoc)

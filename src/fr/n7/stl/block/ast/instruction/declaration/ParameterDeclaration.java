@@ -71,4 +71,22 @@ public class ParameterDeclaration implements Declaration {
 		return this.offset;
 	}
 
+	
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		ParameterDeclaration other = (ParameterDeclaration) obj;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
+			return false;
+		return true;
+	}
+	
+	
 }

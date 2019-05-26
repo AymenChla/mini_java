@@ -51,4 +51,37 @@ public class MethodeSignature implements Declaration {
 	public String getName() {
 		return this.name;
 	}
+
+	
+	@Override
+	public boolean equals(Object obj) {
+		
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		MethodeSignature other = (MethodeSignature) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (parametres == null) {
+			if (other.parametres != null)
+				return false;
+		} else if (!parametres.equals(other.parametres))
+			return false;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
+			return false;
+		
+		return true;
+	}
+
+	
+	
+	
+	
 }

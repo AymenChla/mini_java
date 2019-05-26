@@ -1,5 +1,7 @@
 package fr.n7.stl.block.poo.methode;
 
+import java.util.List;
+
 import fr.n7.stl.block.ast.Block;
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.expression.Expression;
@@ -9,6 +11,7 @@ import fr.n7.stl.block.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.scope.SymbolTable;
+import fr.n7.stl.block.ast.type.AtomicType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.poo.call.AttributAccess;
 import fr.n7.stl.poo.call.AttributAssignment;
@@ -49,15 +52,16 @@ public class Methode extends Definition implements Declaration,Instruction{
 			 _scope.register(this);
 			  HierarchicalScope<Declaration> nvlTable = new SymbolTable(_scope);
 			  boolean result = true;
-			  for(ParameterDeclaration p : this.entete.parametres){
-				  result = p.getType().resolve(_scope) && result;
-				  if(nvlTable.accepts(p)) {
-					  nvlTable.register(p);
+			  if(this.entete.parametres != null)
+				  for(ParameterDeclaration p : this.entete.parametres){
+					  result = p.getType().resolve(_scope) && result;
+					  if(nvlTable.accepts(p)) {
+						  nvlTable.register(p);
+					  }
+					  else {
+						  return false;
+					  }
 				  }
-				  else {
-					  return false;
-				  }
-			  }
 			  this.bloc.resolve(nvlTable);
 			  
 			  
@@ -115,8 +119,15 @@ public class Methode extends Definition implements Declaration,Instruction{
 	@Override
 	public boolean checkType() {
 		
-		//throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
-		return this.bloc.getTypeOfReturn().compatibleWith(this.getType());
+		List<Type> types = this.bloc.getTypesOfReturn();
+		
+		if(!(types.isEmpty() && this.getType().equals(AtomicType.VoidType)))
+			for(Type t : types)
+			{
+				if(!t.compatibleWith(this.getType()))
+						return false;
+			}
+		return true;
 	}
 
 	@Override
@@ -129,4 +140,13 @@ public class Methode extends Definition implements Declaration,Instruction{
 	public String getName() {
 		return this.entete.name;
 	}
+
+	public MethodeSignature getEntete() {
+		return entete;
+	}
+
+	public void setEntete(MethodeSignature entete) {
+		this.entete = entete;
+	}
+	
 }

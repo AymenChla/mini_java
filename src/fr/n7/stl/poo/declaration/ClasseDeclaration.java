@@ -12,6 +12,7 @@ import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.scope.SymbolTable;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.block.poo.methode.Methode;
+import fr.n7.stl.block.poo.methode.MethodeSignature;
 import fr.n7.stl.poo.definition.Attribut;
 import fr.n7.stl.poo.definition.Definition;
 import fr.n7.stl.poo.type.Instanciation;
@@ -62,14 +63,36 @@ public class ClasseDeclaration extends ContainerDeclaration implements Type {
 		}
 		
 		for(Instanciation i : this.implementations){
-			result = result && i.resolve(_scope); 
+			result = result && i.resolve(_scope);
+			
+			//check if all methodes are implemented 
+			InterfaceDeclaration id = (InterfaceDeclaration) i.getDeclaration().getContainer();
+			
+			for(MethodeSignature ms : id.getEntetes())
+			{
+				boolean found = false;
+				for(Definition d : this.definitions)
+				{
+					if(d.getMethode().getEntete().equals(ms))
+						found = true;
+				}
+				
+
+				if(!found)
+					Logger.error("Class must implement all methodes");
+			}
+			
 		}
 		
+	
+			
+			
 		HierarchicalScope<Declaration> newSymboleTable = new SymbolTable(_scope);
 		
 		for(Definition d : this.definitions){
 			result = result && d.resolve(newSymboleTable); 
 		}
+		
 		
 		//System.out.println(newSymboleTable.toString());
 		

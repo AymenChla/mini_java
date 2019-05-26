@@ -1,4 +1,58 @@
-class A extends X implements Y {
+//check multiple return: ok
+//class must implement all methodes: ok
+//function with no params: ok
+
+
+class Fighter extends Caracter implements Actions{
+	
+	private String attack(int x,int y,boolean zz)
+	{
+		if(zz == true)
+		{
+			//return 1;
+			
+			while(!zz)
+			{
+				return "hello";
+			}
+		}
+		else{
+			int att = x;
+		}
+		
+		return "attack"; 
+		//return 1;
+		
+	}
+	
+	public void move(int difName)
+	{
+		
+		//String m = attack(x,x,true);
+	}
+	
+	public int show()
+	{
+		int x = 10;
+		return x;
+	}
+}
+
+class Caracter{
+	
+	public static int id = 0;
+	public int att;
+	public int deff;
+}
+
+interface Actions{
+	String attack(int x,int y,boolean z);
+	void move(int x);
+	int show();
+}
+
+
+/*class A extends X implements Y {
 	
 	public static int x;
 	public int z;
@@ -6,7 +60,7 @@ class A extends X implements Y {
 	
 	public static int fonct(int e)
 	{
-		return 2;
+		
 	}
 	
 }
@@ -38,3 +92,4 @@ class B
 }
 
 
+*/

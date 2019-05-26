@@ -4,6 +4,7 @@ import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;
+import fr.n7.stl.block.poo.methode.Constructor;
 import fr.n7.stl.block.poo.methode.Methode;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
@@ -15,7 +16,7 @@ public class Definition implements Declaration{
 	int finalOrAbstract;
 	Attribut attribut;
 	Methode methode;
-	
+	Constructor constructor;
 	
 	
 	public Attribut getAttribut() {
@@ -57,6 +58,11 @@ public class Definition implements Declaration{
 		this.attribut.setStatic(isStatic);
 	}
 	
+	public Definition(boolean publicOrPrivate, Constructor constructor)
+	{
+		this.publicOrPrivate = publicOrPrivate;
+		this.constructor = constructor;
+	}
 	
 	
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
@@ -64,6 +70,7 @@ public class Definition implements Declaration{
 		
 		if(this.attribut != null ) result = this.attribut.resolve(_scope);
 		if(this.methode != null ) result  = this.methode.resolve(_scope);
+		if(this.constructor != null ) result  = this.constructor.resolve(_scope);
 		
 		return result;
  		
@@ -93,8 +100,8 @@ public class Definition implements Declaration{
 			return this.methode.checkType();
 		else if(this.attribut != null)
 			return this.attribut.checkType();
-		else 
-			throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+		
+		return this.constructor.checkType();
 	}
 
 	@Override
@@ -103,7 +110,16 @@ public class Definition implements Declaration{
 			return this.methode.getName();
 		else if (this.attribut != null)
 			return this.attribut.getName();
-		return "AA";
+		
+		return this.constructor.getName();
+	}
+
+	public Constructor getConstructor() {
+		return constructor;
+	}
+
+	public void setConstructor(Constructor constructor) {
+		this.constructor = constructor;
 	}
 	
 	

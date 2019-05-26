@@ -3,9 +3,13 @@
  */
 package fr.n7.stl.block.ast;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import fr.n7.stl.block.ast.instruction.Conditional;
 import fr.n7.stl.block.ast.instruction.Instruction;
+import fr.n7.stl.block.ast.instruction.Iteration;
+import fr.n7.stl.block.ast.instruction.Repetition;
 import fr.n7.stl.block.ast.instruction.Return;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
@@ -99,16 +103,25 @@ public class Block {
 		
 	}
 	
-	public Type getTypeOfReturn(){
+	public List<Type> getTypesOfReturn(){
+		List<Type> types = new ArrayList<Type>();
 		for(Instruction i: instructions) {
-			if(i instanceof Return){
-				return ((Return) i).getType();
+			if(i instanceof Conditional)
+			{
+				Conditional c = (Conditional) i;
+				types.addAll(c.getTypesOfReturn());
+			}
+			else if(i instanceof Iteration)
+			{
+				Iteration it = (Iteration) i;
+				types.addAll(it.getTypesOfReturn());
+			}
+			else if(i instanceof Return){
+				types.add(((Return) i).getType());
 			}
 		}
 		
-		return AtomicType.VoidType;
-		
-	
+		return types;
 	}
 
 	/**
