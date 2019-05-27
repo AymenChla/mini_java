@@ -4,7 +4,9 @@
 package fr.n7.stl.block.ast.instruction.declaration;
 
 import fr.n7.stl.block.ast.scope.Declaration;
+import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;
+import fr.n7.stl.util.Logger;
 
 /**
  * Abstract Syntax Tree node for a formal parameter in a function declaration.
@@ -86,6 +88,22 @@ public class ParameterDeclaration implements Declaration {
 		} else if (!type.equals(other.type))
 			return false;
 		return true;
+	}
+
+	public void setOffset(int i) {
+		this.offset = i;
+		
+	}
+
+	public boolean resolve(HierarchicalScope<Declaration> scope) {
+		VariableDeclaration declaration = new VariableDeclaration(this.name, this.type, null);
+		if(scope.accepts(declaration))
+		{
+			scope.register(declaration);
+			return true;
+		}
+		Logger.error("parameter already exist");
+		return false;
 	}
 	
 	

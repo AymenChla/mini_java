@@ -1,44 +1,102 @@
-test {
-	print 0;
-	char x = 'x' ;
-	if (x == 'y') {
-		x = 'z';
-	} else {
-		x = (char) 'y' ;
-		while (x == 'x') {
-		}
+//check multiple return: ok
+//class must implement all methodes: ok
+//function with no params: ok
+
+
+class Fighter extends Caracter implements Actions{
+	
+	public static void main()
+	{
+		int x = A.x;
+	
 	}
 	
-	
-	<int,int> z = <15,16>;
-	int a = fst z;
-	int b = snd z;
+	private String attack(int x,int y,boolean zz)
+	{
+		if(zz == true)
+		{
+			//return 1;
+			
+			while(!zz)
+			{
+				return "hello";
+			}
+		}
+		else{
+			int att = x;
+		}
 		
-	typedef int entier;
-	entier k = 77;
+		return "attack"; 
+		//return 1;
+		
+	}
 	
-	int j = 1 + a;
+	public void move(int difName)
+	{
+		
+		//String m = attack(x,x,true);
+	}
 	
-	typedef struct Pointi {
-		int x;
-		int y;
-	}Point;
+	public int show()
+	{
+		int x = 10;
+		return x;
+	}
+}
+
+class Caracter{
 	
-	struct Personne {
-		int poids;
-		int taille;
-	}p1 = {65,180};
-	int monPoids =p1.poids; 
+	public static int id = 0;
+	public int att;
+	public int deff;
+}
+
+interface Actions{
+	String attack(int x,int y,boolean z);
+	void move(int x);
+	int show();
+}
+
+
+class A {
 	
-	const int r = 5;
-	int t[] = new int[5];
-	int tab[] = {1,5,2};
-	tab[1] = 5;
-	print (tab[1]);
+	public static int x = 0;
+	public static int y = 2;
+	public int z;
+	//public B b = new X();
 	
-	int v = 2;
-	int *ptr = &v;
-	*ptr = 3;
+	public static int fonct(int e)
+	{
+		
+	}
+	
+}
+/*
+class X extends B implements Y {
+	
+	private int a = 1;
+	public int getX(int y){
+		
+		int z = A.x; 
+		int c = A.fonct(z);
+		return 2;
+	}	
 	
 	
 }
+
+interface Y extends A{
+
+	 int getX(int y);
+	 int getY(int y);
+}
+
+interface Y1{
+}
+
+class B
+{
+}
+
+
+*/

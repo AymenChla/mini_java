@@ -2,6 +2,7 @@ package fr.n7.stl.poo.definition;
 
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.expression.Expression;
+import fr.n7.stl.block.ast.instruction.Instruction;
 import fr.n7.stl.block.ast.instruction.declaration.VariableDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
@@ -9,16 +10,20 @@ import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.poo.call.ConstructorCall;
 import fr.n7.stl.poo.type.PooType;
 import fr.n7.stl.tam.ast.Fragment;
+import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.util.Logger;
 
-public class Attribut extends Definition implements Declaration {
+public class Attribut extends Definition implements Declaration,Instruction {
 	
 	Type type;
 	String ident;
 	Expression expression;
 	boolean isFinal;
 	boolean isStatic;
+	
+	Register register;
+	int offset;
 	
 	
 	
@@ -77,12 +82,21 @@ public class Attribut extends Definition implements Declaration {
 	
 	public Type getType()
 	{
-		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+		return this.type;
 	}
 	
 	public Fragment getCode(TAMFactory _factory)
 	{
-		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+		Fragment frag = _factory.createFragment();
+		
+		frag.add(_factory.createPush(this.getType().length()));
+		
+		if(this.expression != null)
+			frag.append(expression.getCode(_factory));
+		
+		frag.add(_factory.createStore(this.register, this.offset, this.type.length()));
+		
+		return frag;
 	}
 
 	@Override
@@ -96,6 +110,7 @@ public class Attribut extends Definition implements Declaration {
 
 	public void setFinal(boolean isFinal) {
 		this.isFinal = isFinal;
+
 	}
 	
 	public boolean checkType() {
@@ -104,6 +119,24 @@ public class Attribut extends Definition implements Declaration {
 			return this.type.compatibleWith(this.expression.getType());
 		}
 		return true;
+	}
+	
+	public int allocateMemory(Register register, int offset) {
+		if(this.isStatic)
+		{
+			this.register = register;
+			this.offset = offset;
+			return this.type.length();	
+		}
+		return 0;
+	}
+
+	public int getOffset() {
+		return offset;
+	}
+
+	public void setOffset(int offset) {
+		this.offset = offset;
 	}
 	
 }

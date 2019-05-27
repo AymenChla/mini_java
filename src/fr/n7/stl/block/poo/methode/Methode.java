@@ -27,6 +27,8 @@ public class Methode extends Definition implements Declaration,Instruction{
 	Block bloc;
 	boolean isStatic = false;
 	
+	protected int offset;
+	protected Register register;
 	
 	
 	public boolean isStatic() {
@@ -113,7 +115,8 @@ public class Methode extends Definition implements Declaration,Instruction{
 	
 	public Fragment getCode(TAMFactory _factory)
 	{
-		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+		//get code for main
+		return this.bloc.getCode(_factory);
 	}
 
 	@Override
@@ -127,13 +130,24 @@ public class Methode extends Definition implements Declaration,Instruction{
 				if(!t.compatibleWith(this.getType()))
 						return false;
 			}
-		return true;
+		return this.bloc.checkType();
 	}
 
 	@Override
 	public int allocateMemory(Register _register, int _offset) {
-		// TODO Auto-generated method stub
+		
+		//main allocateMemory
+		if(this.getName().equals("main")) {
+			this.register = _register;
+			this.offset = _offset;
+			
+			this.bloc.allocateMemory(register, offset);
+			return 0;	
+		}
+		
+		//throw new SemanticsUndefinedException("ERROR ALLOC MEM METHODE");
 		return 0;
+		
 	}
 
 	@Override

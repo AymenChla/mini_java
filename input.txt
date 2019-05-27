@@ -1,95 +1,36 @@
-//check multiple return: ok
-//class must implement all methodes: ok
-//function with no params: ok
-
-
-class Fighter extends Caracter implements Actions{
+class Fighter{
 	
-	private String attack(int x,int y,boolean zz)
+	public static void main()
 	{
-		if(zz == true)
+		
+		A a = new A(1,2);	
+		int z = A.z *5;
+		print z;
+		if(z < 100)
 		{
-			//return 1;
-			
-			while(!zz)
+		
+			int i=0;
+			while(i<100)
 			{
-				return "hello";
+				print i;
+				i = i+1;
 			}
 		}
-		else{
-			int att = x;
-		}
-		
-		return "attack"; 
-		//return 1;
-		
 	}
 	
-	public void move(int difName)
-	{
-		
-		//String m = attack(x,x,true);
-	}
-	
-	public int show()
-	{
-		int x = 10;
-		return x;
-	}
-}
-
-class Caracter{
-	
-	public static int id = 0;
-	public int att;
-	public int deff;
-}
-
-interface Actions{
-	String attack(int x,int y,boolean z);
-	void move(int x);
-	int show();
 }
 
 
-/*class A extends X implements Y {
+class A {
 	
-	public static int x;
-	public int z;
-	public B b = new X();
-	
-	public static int fonct(int e)
+	public construct A(int a,int b)
 	{
 		
 	}
 	
-}
-
-class X extends B implements Y {
-	
-	private int a = 1;
-	public int getX(int y){
-		
-		int z = A.x; 
-		int c = A.fonct(z);
-		return 2;
-	}	
-	
+	public static int x = 55;
+	public static boolean y = true;
+	public static int z = 20;
+	public int w;
 	
 }
-
-interface Y extends A{
-
-	 int getX(int y);
-	 int getY(int y);
-}
-
-interface Y1{
-}
-
-class B
-{
-}
-
-
-*/

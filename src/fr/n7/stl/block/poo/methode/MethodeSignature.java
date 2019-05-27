@@ -80,6 +80,14 @@ public class MethodeSignature implements Declaration {
 		return true;
 	}
 
+	public List<ParameterDeclaration> getParametres() {
+		return parametres;
+	}
+
+	public void setParametres(List<ParameterDeclaration> parametres) {
+		this.parametres = parametres;
+	}
+
 	
 	
 	

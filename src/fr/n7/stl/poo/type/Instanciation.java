@@ -7,8 +7,10 @@ import fr.n7.stl.block.ast.expression.Expression;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;
+import fr.n7.stl.block.ast.type.declaration.FieldDeclaration;
 import fr.n7.stl.poo.declaration.ClasseDeclaration;
 import fr.n7.stl.poo.declaration.PooDeclaration;
+import fr.n7.stl.poo.definition.Definition;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.util.Logger;
@@ -68,7 +70,17 @@ public class Instanciation implements Type,Expression {
 	
 	public Fragment getCode(TAMFactory _factory)
 	{
-		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+		
+		ClasseDeclaration cld = (ClasseDeclaration) this.declaration.getContainer();
+		
+		Fragment _result = _factory.createFragment();
+		_result.add(_factory.createLoad(
+				cld.getRegister(), 
+				cld.getOffset(),
+				this.length()));
+		_result.addComment(this.toString());
+		return _result;
+	
 	}
 
 	@Override
@@ -121,8 +133,13 @@ public class Instanciation implements Type,Expression {
 
 	@Override
 	public int length() {
-		// TODO Auto-generated method stub
-		return 0;
+		int _length = 0;
+		ClasseDeclaration cld = (ClasseDeclaration) this.declaration.getContainer();
+		for (Definition d : cld.getDefinitions()) {
+			if(d.getAttribut() != null && d.getAttribut().isStatic())
+			_length += d.getAttribut().getType().length();
+		}
+		return _length;
 	}
 
 	public String getName() {

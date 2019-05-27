@@ -144,6 +144,7 @@ Identificateur = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
   "implements"		{ return symbolFactory.newSymbol("Implements", UL_Implements); }
   "protected"		{ return symbolFactory.newSymbol("Protected", UL_Protected); }
   "this"			{ return symbolFactory.newSymbol("This", UL_This); }
+  "construct"       { return symbolFactory.newSymbol("Construct", UL_Construct); }
   
   {Caractere}		{ return symbolFactory.newSymbol("Caractère", UL_Caractere, yytext()); }
   {Chaine}			{ return symbolFactory.newSymbol("Chaine de caractères", UL_Chaine, yytext()); }

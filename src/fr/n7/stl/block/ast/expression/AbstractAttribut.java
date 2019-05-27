@@ -4,13 +4,13 @@ import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.AtomicType;
-import fr.n7.stl.block.ast.type.RecordType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.block.ast.type.declaration.FieldDeclaration;
 import fr.n7.stl.block.poo.methode.Methode;
 import fr.n7.stl.poo.declaration.ClasseDeclaration;
 import fr.n7.stl.poo.declaration.PooDeclaration;
 import fr.n7.stl.poo.definition.Attribut;
+import fr.n7.stl.poo.definition.Definition;
 import fr.n7.stl.poo.type.Instanciation;
 import fr.n7.stl.util.Logger;
 
@@ -20,11 +20,11 @@ import fr.n7.stl.util.Logger;
  * @author Marc Pantel
  *
  */
-public abstract class AbstractField implements Expression {
+public abstract class AbstractAttribut implements Expression {
 
 	protected Expression record;
 	protected String name;
-	protected FieldDeclaration field;
+	protected Attribut attribut;
 	protected boolean isStatic = false;
 	
 	/**
@@ -32,7 +32,7 @@ public abstract class AbstractField implements Expression {
 	 * @param _record Abstract Syntax Tree for the record part in a record field access expression.
 	 * @param _name Name of the field in the record field access expression.
 	 */
-	public AbstractField(Expression _record, String _name) {
+	public AbstractAttribut(Expression _record, String _name) {
 		this.record = _record;
 		this.name = _name;
 	}
@@ -58,12 +58,16 @@ public abstract class AbstractField implements Expression {
 			if(_scope.knows(inst.getName()))
 			{
 				if(_scope.get(inst.getName()) instanceof PooDeclaration)
-				{
+				{	
+					((Instanciation) record).setDeclaration((PooDeclaration) _scope.get(inst.getName()));
+					
+					
 					PooDeclaration cld = (PooDeclaration) _scope.get(inst.getName());
 					cld = (PooDeclaration) _scope.get(cld.getName());
 					for(Attribut a : cld.getStaticAttributsOfClass())
 						if(a.getName().equals(this.name))
 						{
+							this.attribut = a;
 							this.isStatic = true;
 							return result;
 						}
@@ -86,16 +90,18 @@ public abstract class AbstractField implements Expression {
 	 * @return Synthesized Type of the expression.
 	 */
 	public Type getType() {
-		Type _type = this.record.getType();
-		if(_type instanceof RecordType) { 
-			if(((RecordType)_type).contains(this.name)) {
-				this.field = ((RecordType)_type).get(this.name);
+		Instanciation inst = (Instanciation) this.record;
+		ClasseDeclaration cld = (ClasseDeclaration) inst.getDeclaration().getContainer();
+		for(Definition d : cld.getDefinitions())
+		{
+			if(d.getAttribut() != null && d.getName().equals(this.name))
+			{
+				return d.getAttribut().getType();
 			}
-			return this.field.getType();
 		}
-		else {
-			return AtomicType.ErrorType;
-		}
+		
+		return AtomicType.ErrorType;
+		
 	}
 
 	public boolean isStatic() {

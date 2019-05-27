@@ -10,6 +10,7 @@ import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.scope.SymbolTable;
+import fr.n7.stl.block.ast.type.AtomicType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.block.poo.methode.Methode;
 import fr.n7.stl.block.poo.methode.MethodeSignature;
@@ -18,6 +19,7 @@ import fr.n7.stl.poo.definition.Definition;
 import fr.n7.stl.poo.type.Instanciation;
 import fr.n7.stl.poo.type.PooType;
 import fr.n7.stl.tam.ast.Fragment;
+import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.util.Logger;
 
@@ -28,6 +30,8 @@ public class ClasseDeclaration extends ContainerDeclaration implements Type {
 	Extension extension;
 	List<Instanciation> implementations; 
 	List<Definition> definitions;
+	int offset;
+	Register register;
 	
 	public ClasseDeclaration(int finaOrAbstract, PooDeclaration declaration, Extension extension,
 			List<Instanciation> implementations, List<Definition> definitions) {
@@ -122,7 +126,7 @@ public class ClasseDeclaration extends ContainerDeclaration implements Type {
 			}
 		}
 		
-		System.out.println(this.definitions.size());
+		
 		for(Definition d: this.definitions)
 		{
 			result = d.checkType() && result;
@@ -140,7 +144,15 @@ public class ClasseDeclaration extends ContainerDeclaration implements Type {
 	
 	public Fragment getCode(TAMFactory _factory)
 	{
-		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+		Fragment frag = _factory.createFragment();
+		for(Definition d: this.definitions)
+		{
+			if(d.getAttribut() != null && d.isStatic())
+			{
+				frag.append(d.getAttribut().getCode(_factory));
+			}
+		}
+		return frag;
 	}
 
 
@@ -173,6 +185,20 @@ public class ClasseDeclaration extends ContainerDeclaration implements Type {
 	public Type merge(Type _other) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public int allocateMemory(Register register, int offset) {
+		this.register = register;
+		this.offset = offset;
+		
+		int taille = offset;
+		for(Definition i: this.definitions)
+		{
+			
+			taille += i.allocateMemory(register, taille);
+		}
+		
+		return taille;
 	}
 
 
@@ -218,8 +244,43 @@ public class ClasseDeclaration extends ContainerDeclaration implements Type {
 
 
 
-	
-	
+
+	public Methode getMain()
+	{
+		for(Definition d : definitions)
+		{
+			if(d.getMethode() != null)
+			{
+				Methode m = d.getMethode();
+				if(m.isStatic() && d.isPublicOrPrivate() && m.getType().equals(AtomicType.VoidType) && m.getEntete().getParametres() == null)
+				{
+					return m;
+				}
+			}
+		}
+		
+		return null;
+	}
+
+
+	public int getOffset() {
+		return offset;
+	}
+
+
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+
+
+	public Register getRegister() {
+		return register;
+	}
+
+
+	public void setRegister(Register register) {
+		this.register = register;
+	}
 	
 	
 }

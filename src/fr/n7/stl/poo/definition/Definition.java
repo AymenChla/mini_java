@@ -7,6 +7,7 @@ import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.block.poo.methode.Constructor;
 import fr.n7.stl.block.poo.methode.Methode;
 import fr.n7.stl.tam.ast.Fragment;
+import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 
 public class Definition implements Declaration{
@@ -121,6 +122,27 @@ public class Definition implements Declaration{
 	public void setConstructor(Constructor constructor) {
 		this.constructor = constructor;
 	}
+
+	public int allocateMemory(Register register, int offset) {
+		if(this.attribut != null ) {
+			return this.attribut.allocateMemory(register, offset);
+		}else if(this.methode != null){
+			return this.methode.allocateMemory(register, offset);
+		}
+		
+		//construct
+		return this.constructor.allocateMemory(register, offset);
+	}
+
+	public boolean isPublicOrPrivate() {
+		return publicOrPrivate;
+	}
+
+	public void setPublicOrPrivate(boolean publicOrPrivate) {
+		this.publicOrPrivate = publicOrPrivate;
+	}
+
+		
 	
 	
 }

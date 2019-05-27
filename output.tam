@@ -1,0 +1,7 @@
+PUSH 1
+LOADL 2
+STORE (1) 0[SB]
+;fr.n7.stl.block.ast.expression.accessible.VariableUse@5cad8086
+LOAD (1) 0[SB]
+SUBR IOut
+
