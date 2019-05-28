@@ -21,6 +21,7 @@ public class Instanciation implements Type,Expression {
 	String name;
 	List<Instanciation> instanciations;
 	PooDeclaration declaration;
+	private String label;
 	
 	
 	public PooDeclaration getDeclaration() {
@@ -103,7 +104,7 @@ public class Instanciation implements Type,Expression {
 			if(other.declaration.isClasse())
 			{
 				//réference de type interface sur l'objet d'une classe implementant l'interface
-				ClasseDeclaration cd = (ClasseDeclaration) other.declaration.getContainer();
+				ClasseDeclaration cd = (ClasseDeclaration) this.declaration.getContainer();
 				for(Instanciation i : cd.getImplementations())
 				{
 					if(this.declaration.getName().contentEquals(i.getName()))
@@ -113,8 +114,9 @@ public class Instanciation implements Type,Expression {
 				//réference de type classe sur l'objet d'une classe fils
 				if(cd.getExtension() != null)
 				{
+					if(cd.getExtension().getInstanciation() == null) return false;
 					String classeMere = cd.getExtension().getInstanciation().getName();
-					if(classeMere.equals(this.declaration.getName()))
+					if(classeMere.equals(other.declaration.getName()))
 						return true;
 				}
 			}
@@ -148,6 +150,16 @@ public class Instanciation implements Type,Expression {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public void setLabel(String startLabel) {
+		this.label = startLabel;
+		
+	}
+	
+	public String getLabel()
+	{
+		return this.label;
 	}
 	
 	

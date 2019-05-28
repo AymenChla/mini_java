@@ -57,6 +57,7 @@ public class Definition implements Declaration{
 		this.finalOrAbstract = finalOrAbstract;
 		this.attribut = attribut;
 		this.attribut.setStatic(isStatic);
+		this.attribut.publicOrPrivate = this.publicOrPrivate;
 	}
 	
 	public Definition(boolean publicOrPrivate, Constructor constructor)

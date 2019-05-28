@@ -20,7 +20,10 @@ import fr.n7.stl.tam.ast.TAMFactory;
 public class Return implements Instruction {
 
 	protected Expression value;
-
+	private int parametersSize;
+	private Register register;
+	private int offset;
+	 
 	public Return(Expression _value) {
 		this.value = _value;
 	}
@@ -58,7 +61,10 @@ public class Return implements Instruction {
 	 */
 	@Override
 	public int allocateMemory(Register _register, int _offset) {
-		throw new SemanticsUndefinedException("Semantics allocateMemory undefined in Return.");
+		this.register = _register;
+		this.offset = _offset;
+
+		return 0;
 	}
 
 	/* (non-Javadoc)
@@ -69,4 +75,14 @@ public class Return implements Instruction {
 		throw new SemanticsUndefinedException("Semantics getCode undefined in Return.");
 	}
 
+	public int getParametersSize() {
+		return parametersSize;
+	}
+
+	public void setParametersSize(int parametersSize) {
+		this.parametersSize = parametersSize;
+	}
+
+	
+	
 }

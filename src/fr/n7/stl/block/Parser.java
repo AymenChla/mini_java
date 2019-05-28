@@ -815,8 +815,10 @@ class CUP$Parser$actions {
 								
 										ClasseDeclaration cld = (ClasseDeclaration) cd;
 										code = cld.getCode(factory);
+					
 										
 							}
+
 						}
 
 						for(ContainerDeclaration cd : containers){
@@ -826,6 +828,7 @@ class CUP$Parser$actions {
 								Methode main = cld.getMain();	
 								if(main != null)
 								{
+
 									main.allocateMemory(Register.SB,taille);
 									code.append(main.getCode(factory));
 										
@@ -833,6 +836,7 @@ class CUP$Parser$actions {
 								
 							}
 						}
+
 						code.add(factory.createHalt());
 						try {
 							FileWriter fichier = new FileWriter("aaaa.tam");

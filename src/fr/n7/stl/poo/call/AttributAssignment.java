@@ -54,8 +54,7 @@ public class AttributAssignment extends AbstractIdentifier implements Assignable
 
 	@Override
 	public Type getType() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.attribut.getType();
 	}
 
 	@Override

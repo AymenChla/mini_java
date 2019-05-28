@@ -1,36 +1,113 @@
-class Fighter{
+class Fighter extends Caracter implements Actions{
 	
 	public static void main()
 	{
-		
-		A a = new A(1,2);	
-		int z = A.z *5;
-		print z;
-		if(z < 100)
-		{
-		
-			int i=0;
-			while(i<100)
-			{
-				print i;
-				i = i+1;
-			}
-		}
+		int x = A.x;
+	
 	}
 	
+	private String attack(int x,int y,boolean zz)
+	{
+		if(zz == true)
+		{
+			//return 1;
+			
+			while(!zz)
+			{
+				return "hello";
+			}
+		}
+		else{
+			int att = x;
+		}
+		
+		return "attack"; 
+		//return 1;
+		
+	}
+	
+	public void move(int difName)
+	{
+		
+		//String m = attack(x,x,true);
+	}
+	
+	public int show()
+	{
+		int x = 10;
+		return x;
+	}
+}
+
+class Caracter extends A {
+	
+	private static int id = 0;
+	public int att;
+	public int deff;
+}
+
+interface Actions{
+	String attack(int x,int y,boolean z);
+	void move(int x);
+	int show();
 }
 
 
 class A {
 	
-	public construct A(int a,int b)
+	public static int x = 0;
+	public static int y = 2;
+	public int z = 8;
+	//public B b = new X();
+	
+	
+	public static int fonct(int e)
 	{
-		
+		 //int z = A.x;
+		 return 1;
 	}
 	
-	public static int x = 55;
-	public static boolean y = true;
-	public static int z = 20;
-	public int w;
+	public int f2()
+	{
+		int y = this.z;
+		this.z = 8;
+		return 2;
+	}
+	
+	public A a = new A();
+	public construct A()
+	{
+		
+		int x = A.fonct(5);
+		
+	}
+}
+/*
+class X extends B implements Y {
+	
+	private int a = 1;
+	public int getX(int y){
+		
+		int z = A.x; 
+		int c = A.fonct(z);
+		return 2;
+	}	
+	
 	
 }
+
+interface Y extends A{
+
+	 int getX(int y);
+	 int getY(int y);
+}
+
+interface Y1{
+}
+
+class B
+{
+}
+
+
+*/

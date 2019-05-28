@@ -151,6 +151,10 @@ public class ClasseDeclaration extends ContainerDeclaration implements Type {
 			{
 				frag.append(d.getAttribut().getCode(_factory));
 			}
+			else if(d.getConstructor() != null)
+			{
+				frag.append(d.getConstructor().getCode(_factory));
+			}
 		}
 		return frag;
 	}

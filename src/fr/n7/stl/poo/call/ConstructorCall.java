@@ -13,6 +13,7 @@ import fr.n7.stl.poo.definition.Definition;
 import fr.n7.stl.poo.type.Instanciation;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Library;
+import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.util.Logger;
 
@@ -61,11 +62,15 @@ public class ConstructorCall implements Expression{
 						Logger.error("Constructor with those parameter doesn't exist");
 					}
 					
-					for(int i=0 ; i < this.parametres.size() ; i++)
+					if(this.parametres !=null)
 					{
-						if(!this.parametres.get(i).getType().compatibleWith(d.getConstructor().getParametres().get(i).getType()))
-							Logger.error("Type mismatch error");
+						for(int i=0 ; i < this.parametres.size() ; i++)
+						{
+							if(!this.parametres.get(i).getType().compatibleWith(d.getConstructor().getParametres().get(i).getType()))
+								Logger.error("Type mismatch error");
+						}
 					}
+					
 				}
 			}
 			
@@ -91,18 +96,17 @@ public class ConstructorCall implements Expression{
 	public Fragment getCode(TAMFactory _factory) {
 		
 		Fragment frag = _factory.createFragment();
-		
-		for(Expression param: this.parametres)
-		{
-			frag.append(param.getCode(_factory));
+		// Empiler les paramètres
+		for (Expression arg : this.parametres){
+			frag.append(arg.getCode(_factory));
 		}
-		
-		frag.add(_factory.createLoadL(this.type.length()));
-		
-		frag.add(Library.MAlloc);
-		
-		
-		
+
+		// call
+		Instanciation inst = (Instanciation) this.type;
+		frag.add(_factory.createCall("FUNC_"+inst.getName()+"_"+1+"_START", Register.LB));
+		//frag.add(_factory.createJump("FUNC_"+inst.getName()+"_"+1+"_START"));
+		frag.addComment("Function "+inst.getName()+" call");
+
 		return frag;
 	}
 }

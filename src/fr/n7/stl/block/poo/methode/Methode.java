@@ -1,5 +1,7 @@
 package fr.n7.stl.block.poo.methode;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import fr.n7.stl.block.ast.Block;
@@ -29,6 +31,8 @@ public class Methode extends Definition implements Declaration,Instruction{
 	
 	protected int offset;
 	protected Register register;
+	
+	protected String label;
 	
 	
 	public boolean isStatic() {
@@ -116,7 +120,46 @@ public class Methode extends Definition implements Declaration,Instruction{
 	public Fragment getCode(TAMFactory _factory)
 	{
 		//get code for main
-		return this.bloc.getCode(_factory);
+		if(this.getEntete().getName().equals("main"))
+		{
+			return this.bloc.getCode(_factory);
+		}
+		else {
+			 Fragment _fragment = _factory.createFragment();
+
+		        //By default there is always the pointed object
+		        int _paramssize = 1;
+
+		        for (ParameterDeclaration _parameter : this.getEntete().getParametres()) {
+		            _paramssize += _parameter.getType().length();
+		        }
+
+		        this.bloc.setParametersSize(_paramssize);
+
+		        /*if (this.signature.getValueType() instanceof ConstructorType) {
+		            _fragment.add(_factory.createLoad(Register.LB, -1, 1));
+		        }*/
+
+		        _fragment.append(this.bloc.getCode2(_factory));
+
+		        if (this.getEntete().getType() == AtomicType.VoidType) {
+		            _fragment.add(_factory.createReturn(0, _paramssize));
+		        } /*else if (this.getEntete().getType() instanceof ConstructorType) {
+		            ConstructorType _classType = (ConstructorType)this.getValueType();
+		            _fragment.add(_factory.createLoad(_classType.getClassDeclaration().getRegister(),
+		                                              _classType.getClassDeclaration().getOffset(),
+		                                              1));
+		            _fragment.add(_factory.createLoad(Register.LB, -1, 1));
+		            _fragment.add(_factory.createStoreI(1));
+		            _fragment.add(_factory.createReturn(_classType.length(), _paramssize));
+		        }*/
+
+		        this.label = "function_" + this.getEntete().getName() + _factory.createLabelNumber();
+		        _fragment.addPrefix(this.label);
+
+		        return _fragment;
+		}
+		
 	}
 
 	@Override
@@ -142,7 +185,26 @@ public class Methode extends Definition implements Declaration,Instruction{
 			this.offset = _offset;
 			
 			this.bloc.allocateMemory(register, offset);
-			return 0;	
+			return 0;
+			
+		}else {
+			this.register = _register;
+	        this.offset = _offset;
+
+	        //Always loading address of the object on which function is called
+	        int _paramssize = 1;
+	        
+	        List<ParameterDeclaration> reversedParameters = new LinkedList<>();
+	        if(this.getEntete().getParametres() != null)
+	        	reversedParameters = new LinkedList<>(this.getEntete().getParametres());
+	        Collections.reverse(reversedParameters);
+
+	        for (ParameterDeclaration _parameter : reversedParameters) {
+	            _paramssize += _parameter.allocateMemory(Register.LB, -1*_paramssize);
+	        }
+
+	        // 3 because of CALL instruction inner behaviour
+	        this.bloc.allocateMemory(Register.LB, 3);
 		}
 		
 		//throw new SemanticsUndefinedException("ERROR ALLOC MEM METHODE");
@@ -162,5 +224,6 @@ public class Methode extends Definition implements Declaration,Instruction{
 	public void setEntete(MethodeSignature entete) {
 		this.entete = entete;
 	}
+	
 	
 }

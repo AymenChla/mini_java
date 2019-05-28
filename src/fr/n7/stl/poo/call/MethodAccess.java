@@ -23,6 +23,7 @@ public class MethodAccess implements Expression{
 	Expression expression;
 	String methode;
 	List<Expression> parametres;
+	Type type;
 	
 	public MethodAccess(Expression expression, String methode) {
 		super();
@@ -52,8 +53,15 @@ public class MethodAccess implements Expression{
 					PooDeclaration cld = (PooDeclaration) _scope.get(inst.getName());
 					cld = (PooDeclaration) _scope.get(cld.getName());
 					for(Methode a : cld.getStaticMethodesOfClass())
+					{
+						this.type = a.getType();
 						if(a.getName().equals(this.methode))
+						{
+							
 							return result;
+						}
+					}
+						
 					Logger.error("The name of this methode does not exist or not static methode");
 				}
 				else{
@@ -85,7 +93,7 @@ public class MethodAccess implements Expression{
 
 	@Override
 	public Type getType() {
-		throw new SemanticsUndefinedException( "Semantics getType is undefined in ConditionalExpression.");
+		return this.type;
 	}
 
 	@Override

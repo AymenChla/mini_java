@@ -218,8 +218,10 @@ Program ::= Containers : containers
 								
 										ClasseDeclaration cld = (ClasseDeclaration) cd;
 										code = cld.getCode(factory);
+					
 										
 							}
+
 						}
 
 						for(ContainerDeclaration cd : containers){
@@ -229,6 +231,7 @@ Program ::= Containers : containers
 								Methode main = cld.getMain();	
 								if(main != null)
 								{
+
 									main.allocateMemory(Register.SB,taille);
 									code.append(main.getCode(factory));
 										
@@ -236,6 +239,7 @@ Program ::= Containers : containers
 								
 							}
 						}
+
 						code.add(factory.createHalt());
 						try {
 							FileWriter fichier = new FileWriter("aaaa.tam");

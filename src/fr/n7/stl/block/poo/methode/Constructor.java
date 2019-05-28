@@ -1,5 +1,7 @@
 package fr.n7.stl.block.poo.methode;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import fr.n7.stl.block.ast.Block;
@@ -25,8 +27,11 @@ public class Constructor extends Definition implements Declaration, Instruction{
 	Instanciation instanciation;
 	List<ParameterDeclaration> parametres;
 	Block bloc;
-	
-	
+	String label;
+	private Register register;
+	private int offset;
+	int allocation_length;
+	private String id;
 	
 	public Constructor(Instanciation instanciation, List<ParameterDeclaration> parametres, Block bloc) {
 		super();
@@ -81,12 +86,56 @@ public class Constructor extends Definition implements Declaration, Instruction{
 	@Override
 	public int allocateMemory(Register _register, int _offset) {
 		
-		return 0;
-	}
+			this.register = _register;
+	        this.offset = _offset;
 
+	     // Calculer les offset des paramtre (en négatif car avant LB)
+			this.allocation_length = 0;
+			if(this.parametres!=null)
+			for (int k = this.parametres.size()-1; k>=0; k--) {
+				ParameterDeclaration p =  this.parametres.get(k);
+				this.allocation_length += p.getType().length();
+				p.setOffset(- this.allocation_length);
+
+			}
+			this.bloc.allocateMemory(Register.LB, 3); // offset par defaut 3 pour laisser la place aux donnees de CALL et RETURN
+			return 0;
+	}
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException("Semantics getCode is not implemented in PointerAccess.");
+		
+		this.id = Integer.toString(_factory.createLabelNumber());
+		Fragment frag = _factory.createFragment();
+
+		// Placer le code de la fonction (en indiquant la taille du type pour que le block ne l'efface pas
+		frag.append(this.bloc.getCode(_factory));
+		// Placer un return s'il n'y en a pas (type void seulement)
+		
+		// Placer les etiquettes
+		frag.addPrefix(this.getStartLabel()+":");
+		frag.addSuffix(this.getEndLabel()+":");
+		// Placer un jump au tout début pour eviter la fonction
+		Fragment frag_jump = _factory.createFragment();
+		frag_jump.add(_factory.createJump(this.getEndLabel()));
+
+		// POP des paramètre (déjà fait par Return)
+
+		frag_jump.append(frag);
+		return frag_jump;
+	}
+
+	public String getStartLabel(){
+		if (this.id == null){
+			Logger.error("Function label was call before function is declared");
+		}
+
+		return "FUNC_"+this.instanciation.getName()+"_"+this.id+"_START";
+	}
+	public String getEndLabel(){
+		if (this.id == null){
+			Logger.error("Function label was call before function is declared");
+		}
+		return "FUNC_"+this.instanciation.getName()+"_"+this.id+"_END";
 	}
 
 	public List<ParameterDeclaration> getParametres() {
@@ -96,6 +145,6 @@ public class Constructor extends Definition implements Declaration, Instruction{
 	public void setParametres(List<ParameterDeclaration> parametres) {
 		this.parametres = parametres;
 	}
-
+	
 	
 }

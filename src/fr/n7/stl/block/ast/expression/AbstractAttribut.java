@@ -65,12 +65,20 @@ public abstract class AbstractAttribut implements Expression {
 					PooDeclaration cld = (PooDeclaration) _scope.get(inst.getName());
 					cld = (PooDeclaration) _scope.get(cld.getName());
 					for(Attribut a : cld.getStaticAttributsOfClass())
-						if(a.getName().equals(this.name))
+						if(a.getName().equals(this.name) )
 						{
-							this.attribut = a;
-							this.isStatic = true;
-							return result;
+							if(a.isPublicOrPrivate())
+							{
+								this.attribut = a;
+								this.isStatic = true;
+								return result;	
+							}
+							else {
+								Logger.error("Access to non public attribut");
+							}
+							
 						}
+						
 					Logger.error("The name of this attribut does not exist or not static attribut");
 				}
 				else{

@@ -36,7 +36,10 @@ public class Block {
 	 * Sequence of instructions contained in a block.
 	 */
 	protected List<Instruction> instructions;
-
+	private int parametersSize;
+	private int offset;
+	private Register register;
+	
 	/**
 	 * Constructor for a block.
 	 */
@@ -94,13 +97,12 @@ public class Block {
 	 * @param _offset Inherited Current offset for the address of the variables.
 	 */	
 	public void allocateMemory(Register _register, int _offset) {
-		int local = _offset;
-		
-		for(Instruction i: instructions) {
-			local += i.allocateMemory(_register, local);
+		this.register = _register;
+		int _length = _offset;
+		for (Instruction i : this.instructions) {
+			_length += i.allocateMemory(this.register, _length);
 		}
-		local = _offset ;
-		
+		this.offset = _length - _offset;
 	}
 	
 	public List<Type> getTypesOfReturn(){
@@ -132,11 +134,34 @@ public class Block {
 	 */
 	public Fragment getCode(TAMFactory _factory) {
 		Fragment frag = _factory.createFragment();
-		
+		System.out.println();
 		for(Instruction i : instructions) {
 			frag.append(i.getCode(_factory));
 		}
 		return frag;
+	}
+
+	
+	public Fragment getCode2(TAMFactory _factory) {
+		Fragment fragment = _factory.createFragment();
+		for (Instruction i : this.instructions) {
+			if (i instanceof Return) {
+				((Return)i).setParametersSize(this.parametersSize);
+			}
+			fragment.append(i.getCode(_factory));
+		}
+		return fragment;
+	}
+	
+	
+	
+	public int getParametersSize() {
+		return parametersSize;
+	}
+
+
+	public void setParametersSize(int parametersSize) {
+		this.parametersSize = parametersSize;
 	}
 
 
